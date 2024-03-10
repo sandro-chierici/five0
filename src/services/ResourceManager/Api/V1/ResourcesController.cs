@@ -2,7 +2,7 @@
 
 namespace ResourceManager.Api.V1;
 
-[Route("api/v1/[controller]")]
+[Route("api/v1/resources")]
 [ApiController]
 public class ResourcesController : ControllerBase
 {
@@ -12,28 +12,24 @@ public class ResourcesController : ControllerBase
         return new string[] { "value1", "value2" };
     }
 
-    // GET api/<ResourcesController>/5
     [HttpGet("{id:long}")]
-    public string Get(long id)
+    public string GetById(long id)
     {
         return "value";
     }
 
-    // POST api/<ResourcesController>
     [HttpPost]
     public void Post([FromBody] string value)
     {
     }
 
-    // PUT api/<ResourcesController>/5
-    [HttpPut("{id}")]
+    [HttpPut("{id:long}")]
     public void Put(int id, [FromBody] string value)
     {
     }
 
-    // DELETE api/<ResourcesController>/5
-    [HttpDelete("{id}")]
-    public void Delete(int id)
+    [HttpDelete("{id:long}")]
+    public void Delete(long id)
     {
     }
 }

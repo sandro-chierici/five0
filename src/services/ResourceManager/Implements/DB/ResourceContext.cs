@@ -17,4 +17,9 @@ public class ResourceContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseNpgsql(@"Host=myserver;Username=five0_rm;Password=five0_rm;Database=five0.resources");
+    }
+
 }
