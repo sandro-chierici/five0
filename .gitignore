@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/src/services/ResourceManager/obj
+/src/services/ResourceManager/.vs/ResourceManager
+/src/services/ResourceManager/ResourceManager.csproj.user
