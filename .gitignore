@@ -5,3 +5,4 @@
 /src/services/ResourceManager/obj
 /src/services/ResourceManager/.vs/ResourceManager
 /src/services/ResourceManager/ResourceManager.csproj.user
+/src/services/ResourceManager/bin/Debug/net8.0
