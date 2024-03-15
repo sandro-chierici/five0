@@ -36,7 +36,7 @@ public class ResourceContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(@"Host=dbpostgres;Username=five0_rm;Password=five0_rm;Database=five0.resources");
+        optionsBuilder.UseNpgsql(@"Host=db_resources;Username=five0_rm;Password=five0_rm;Database=Resources");
     }
 
 }
