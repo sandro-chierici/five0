@@ -12,6 +12,9 @@ public class ResourceContext : DbContext
     public DbSet<ResourceTypeHierarchy> ResourceTypesHierarchy { get; set; }
     public DbSet<ResourceResourceGroup> ResourceResourceGroups { get; set; }
 
+    public ResourceContext(DbContextOptions<ResourceContext> options) : base(options) 
+    { }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -30,13 +33,6 @@ public class ResourceContext : DbContext
 
         modelBuilder.Entity<ResourceResourceGroup>().HasKey(e => e.Id);
         modelBuilder.Entity<ResourceResourceGroup>().Property(e => e.Id).ValueGeneratedOnAdd();
-
-
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql(@"Host=db_resources;Username=five0_rm;Password=five0_rm;Database=Resources");
     }
 
 }

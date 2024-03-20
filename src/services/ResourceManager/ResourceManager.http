@@ -1,6 +1,8 @@
 @ResourceManager_HostAddress = http://localhost:5223
 
-GET {{ResourceManager_HostAddress}}/weatherforecast/
+GET {{ResourceManager_HostAddress}}/resources
 Accept: application/json
 
 ###
+GET {{ResourceManager_HostAddress}}/resources/actions/createdb
+Accept: application/json

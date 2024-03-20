@@ -1,26 +1,42 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using ResourceManager.Business.Contracts;
 
 namespace ResourceManager.Api.V1;
 
-[Route("api/v1/resources")]
+[Route("api/v1/[Controller]")]
 [ApiController]
-public class ResourcesController : ControllerBase
+public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbCommand) : ControllerBase
 {
+    [Route("actions/createdb")]
     [HttpGet]
-    public IEnumerable<string> Get()
+    public async Task<ActionResult> EnsureDbCreated()
     {
-        return new string[] { "value1", "value2" };
+        await dbCommand.EnsureDBCreated();
+
+        return Ok();
+    }
+
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<string>>> GetAll()
+    {
+        var resp = await dbQuery.GetResourcesAsync(_ => true);
+        return Ok(new JsonResult(resp.Value?.ToList()));
     }
 
     [HttpGet("{id:long}")]
-    public string GetById(long id)
+    public async Task<string> GetById(long id)
     {
-        return "value";
+        var qr = await dbQuery.GetResourcesAsync(res => res.Id == id);
+
+        return (qr.Value?.FirstOrDefault()?.Name ?? "") ;
     }
 
     [HttpPost]
     public void Post([FromBody] string value)
     {
+        
     }
 
     [HttpPut("{id:long}")]

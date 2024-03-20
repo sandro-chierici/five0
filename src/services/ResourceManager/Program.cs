@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ResourceManager.Business.Contracts;
 using ResourceManager.Implements.DB;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,11 +8,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<ResourceContext>();
+builder.Services.AddDbContextFactory<ResourceContext>(
+    (optionsBuilder) =>
+    {
+        optionsBuilder.UseNpgsql(
+            builder.Configuration.GetConnectionString("ResourceManager") 
+            ?? @"Host=localhost;Username=postgres;Password=five0_rm;Database=five0_rm");
+    });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// App services
+builder.Services.AddSingleton<IDatabaseQuery, DbServiceQuery>();
+builder.Services.AddSingleton<IDatabaseCommand, DbServiceCommand>();
 
 var app = builder.Build();
 
