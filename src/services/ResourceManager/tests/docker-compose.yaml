@@ -1,20 +1,34 @@
-# Use postgres/example user/password credentials
-version: '3.9'
+
+version: '3.8'
 
 services:
 
+  # Connection: 
+  # db:5432  user=admin  pwd=five0_rm
   db:
     image: postgres
     restart: always
-    # set shared memory limit when using docker-compose
-    shm_size: 128mb
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_PASSWORD: five0_rm
+      POSTGRES_EMAIL: xxxxxxx@mail.com
+    networks:
+      - five0_net
 
+  # DashboardConnection: 
+  # dockerip:8001   user: xxxxxxx@mail.com  pwd: SuperSecret
   pgadmin:
     image: dpage/pgadmin4
     restart: always
+
     ports:
-      - 80:8888
+      - 8001:80
     environment:
-      PGADMIN_DEFAULT_PASSWORD: SuperSecret 
+      PGADMIN_DEFAULT_PASSWORD: SuperSecret
+      PGADMIN_DEFAULT_EMAIL: xxxxxxx@mail.com
+    networks:
+      - five0_net
+
+networks:
+  five0_net:
