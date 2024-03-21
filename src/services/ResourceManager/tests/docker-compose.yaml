@@ -1,34 +1,37 @@
-
+# Use postgres/example user/password credentials
 version: '3.8'
 
 services:
 
-  # Connection: 
-  # db:5432  user=admin  pwd=five0_rm
   db:
     image: postgres
     restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data    
     ports:
       - 5432:5432
     environment:
       POSTGRES_PASSWORD: five0_rm
-      POSTGRES_EMAIL: xxxxxxx@mail.com
+      POSTGRES_EMAIL: xxxxxxxx@mail.com
     networks:
       - five0_net
 
-  # DashboardConnection: 
-  # dockerip:8001   user: xxxxxxx@mail.com  pwd: SuperSecret
   pgadmin:
     image: dpage/pgadmin4
     restart: always
-
+    volumes:
+      - pgadmin-data:/pgadmin4
     ports:
       - 8001:80
     environment:
       PGADMIN_DEFAULT_PASSWORD: SuperSecret
-      PGADMIN_DEFAULT_EMAIL: xxxxxxx@mail.com
+      PGADMIN_DEFAULT_EMAIL: xxxxxxxx@mail.com
     networks:
       - five0_net
 
 networks:
   five0_net:
+
+volumes:
+  db-data:
+  pgadmin-data:

@@ -1,7 +1,7 @@
 ﻿namespace ResourceManager.Api.V1;
 
 
-public class BaseResponse
+public class ApiBaseResponse
 {
     public record MetadataResponse(string Source, string Ver)
     {
@@ -17,14 +17,14 @@ public class BaseResponse
 
     public ErrorResponse? Error { get; init; }
 
-    public BaseResponse(
+    public ApiBaseResponse(
         string source = "five0 Resource Manager", 
         string ver = "1.0")
     {
         Metadata = new MetadataResponse(source, ver);
     }
 
-    public BaseResponse(
+    public ApiBaseResponse(
     string error,
     string? errorDescription = null,
     string source = "five0 Resource Manager",
@@ -34,7 +34,7 @@ public class BaseResponse
         Error = new ErrorResponse(error, errorDescription);
     }
 
-    public BaseResponse(
+    public ApiBaseResponse(
     object data,
     string source = "five0 Resource Manager",
     string ver = "1.0")
@@ -44,9 +44,9 @@ public class BaseResponse
     }
 }
 
-public class OkResponse() : BaseResponse();
-public class DataResponse(object data) : BaseResponse(data: data);
-public class ErrorResponse(string error, string? description = null) : BaseResponse(error: error, errorDescription: description);
+public class OkResponse() : ApiBaseResponse();
+public class DataResponse(object data) : ApiBaseResponse(data: data);
+public class ErrorResponse(string error, string? description = null) : ApiBaseResponse(error: error, errorDescription: description);
 
 
 

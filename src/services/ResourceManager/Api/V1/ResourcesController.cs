@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ResourceManager.Business.Contracts;
 
 namespace ResourceManager.Api.V1;
@@ -19,7 +18,7 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
 
 
     [HttpGet]
-    public async Task<ActionResult<BaseResponse>> GetAll()
+    public async Task<ActionResult<ApiBaseResponse>> GetAll()
     {
         var resp = await dbQuery.GetResourcesAsync(_ => true);
 
@@ -32,7 +31,7 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
     }
 
     [HttpGet("{id:long}")]
-    public async Task<ActionResult<BaseResponse>> GetById(long id)
+    public async Task<ActionResult<ApiBaseResponse>> GetById(long id)
     {
         var resp = await dbQuery.GetResourcesAsync(res => res.Id == id);
 
