@@ -10,27 +10,38 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
 {
     [Route("actions/createdb")]
     [HttpGet]
-    public async Task<ActionResult> EnsureDbCreated()
+    public async Task<ActionResult<OkResponse>> EnsureDbCreated()
     {
         await dbCommand.EnsureDBCreated();
 
-        return Ok();
+        return Ok(new OkResponse());
     }
 
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<string>>> GetAll()
+    public async Task<ActionResult<BaseResponse>> GetAll()
     {
         var resp = await dbQuery.GetResourcesAsync(_ => true);
-        return Ok(new JsonResult(resp.Value?.ToList()));
+
+        if (resp.IsError)
+        {
+            return NotFound(new ErrorResponse(resp.Error?.errorMessage ?? "Not specified error"));
+        }
+
+        return Ok(new DataResponse(resp.Value?.ToList() ?? new()));
     }
 
     [HttpGet("{id:long}")]
-    public async Task<string> GetById(long id)
+    public async Task<ActionResult<BaseResponse>> GetById(long id)
     {
-        var qr = await dbQuery.GetResourcesAsync(res => res.Id == id);
+        var resp = await dbQuery.GetResourcesAsync(res => res.Id == id);
 
-        return (qr.Value?.FirstOrDefault()?.Name ?? "") ;
+        if (resp.IsError)
+        {
+            return NotFound(new ErrorResponse(resp.Error?.errorMessage ?? "Not specified error"));
+        }
+
+        return Ok(new DataResponse(resp.Value?.ToList() ?? new()));
     }
 
     [HttpPost]

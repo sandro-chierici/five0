@@ -11,5 +11,5 @@ public interface IDatabaseCommand
 
 public interface IDatabaseQuery
 {
-    ValueTask<QueryResponse<List<Resource>>> GetResourcesAsync(Expression<Func<Resource, bool>> filter);
+    ValueTask<QueryResponse<List<Resource>>> GetResourcesAsync(Expression<Func<Resource, bool>> filter, int? limit = null);
 }
