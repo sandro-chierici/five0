@@ -1,0 +1,27 @@
+﻿using Microsoft.EntityFrameworkCore;
+using CompanyDataService.Business.Contracts;
+using CompanyDataService.Business.DataModel;
+using System.Linq.Expressions;
+
+namespace CompanyDataService.Implements.DB;
+
+public class DbServiceQuery(IDbContextFactory<ResourceContext> contextFactory) : IDatabaseQuery
+{
+    public async ValueTask<QueryResponse<List<Resource>>> GetResourcesAsync(Expression<Func<Resource, bool>> filter, int? limit)
+    {
+        try
+        {
+            using var ctx = await contextFactory.CreateDbContextAsync();
+            var data = await ctx.Resources
+                .Where(filter)
+                .Take(limit ?? 1000) // security limit
+                .ToListAsync();
+
+            return new() { Value = data };
+        }
+        catch (Exception ex) 
+        {
+            return new() { Error = new Error(ex.Message, ErrorCodes.GenericError) };
+        }
+    }
+}
