@@ -8,3 +8,8 @@ src/services/ResourceManager/ResourceManager.csproj.user
 src/services/ResourceManager/bin
 src/services/ResourceManager/.vs/ProjectEvaluation
 src/services/ResourceManager/.mono
+/src/services/CompanyDataService/.vs
+/src/services/CompanyDataService/.mono/registry/CurrentUser/software/microsoft/csdevkit/telemetry/persistentpropertybag/microsoft.visualstudio.code.servicehost
+/src/services/CompanyDataService/bin/Debug/net8.0
+/src/services/CompanyDataService/obj
+/src/services/CompanyDataService/CompanyDataService.csproj.user
