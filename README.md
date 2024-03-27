@@ -1,4 +1,4 @@
-# five0  (pronunced 'five'-'oh')
+# five0  (pronunced 'five-oh')
 
 Simple architecture for industry 5.0
 
