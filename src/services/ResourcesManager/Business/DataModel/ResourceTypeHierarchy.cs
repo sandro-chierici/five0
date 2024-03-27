@@ -1,4 +1,4 @@
-﻿namespace CompanyDataService.Business.DataModel;
+﻿namespace ResourcesManager.Business.DataModel;
 
 /// <summary>
 /// Resources hierarchy

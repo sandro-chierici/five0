@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using CompanyDataService.Business.Contracts;
-using CompanyDataService.Business.DataModel;
+using ResourcesManager.Business.Contracts;
+using ResourcesManager.Business.DataModel;
 using System.Linq.Expressions;
 
-namespace CompanyDataService.Implements.DB;
+namespace ResourcesManager.Implements.DB;
 
 public class DbServiceQuery(IDbContextFactory<ResourceContext> contextFactory) : IDatabaseQuery
 {

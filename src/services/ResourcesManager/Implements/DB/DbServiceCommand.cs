@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using CompanyDataService.Business.Contracts;
-using CompanyDataService.Business.DataModel;
+using ResourcesManager.Business.Contracts;
+using ResourcesManager.Business.DataModel;
 
-namespace CompanyDataService.Implements.DB;
+namespace ResourcesManager.Implements.DB;
 
 public class DbServiceCommand(IDbContextFactory<ResourceContext> contextFactory) : IDatabaseCommand
 {

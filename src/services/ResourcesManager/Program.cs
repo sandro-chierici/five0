@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using CompanyDataService.Business.Contracts;
-using CompanyDataService.Implements.DB;
+using ResourcesManager.Business.Contracts;
+using ResourcesManager.Implements.DB;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +12,7 @@ builder.Services.AddDbContextFactory<ResourceContext>(
     (optionsBuilder) =>
     {
         optionsBuilder.UseNpgsql(
-            builder.Configuration.GetConnectionString("CompanyDataService") 
+            builder.Configuration.GetConnectionString("ResourcesManagerDb") 
             ?? @"Host=localhost;Username=postgres;Password=five0_rm;Database=five0_rm");
     });
 

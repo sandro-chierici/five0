@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompanyDataService", "CompanyDataService.csproj", "{F5E29BDB-9696-4818-BF16-6B58FD526E20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResourcesManager", "ResourcesManager.csproj", "{F5E29BDB-9696-4818-BF16-6B58FD526E20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

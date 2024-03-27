@@ -1,7 +1,7 @@
-﻿using CompanyDataService.Business.DataModel;
+﻿using ResourcesManager.Business.DataModel;
 using System.Linq.Expressions;
 
-namespace CompanyDataService.Business.Contracts;
+namespace ResourcesManager.Business.Contracts;
 
 public interface IDatabaseCommand
 {

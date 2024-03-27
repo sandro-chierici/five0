@@ -2,8 +2,8 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/src/services/CompanyDataService/.vs
-/src/services/CompanyDataService/.mono/registry/CurrentUser/software/microsoft/csdevkit/telemetry/persistentpropertybag/microsoft.visualstudio.code.servicehost
-/src/services/CompanyDataService/bin
-/src/services/CompanyDataService/obj
-/src/services/CompanyDataService/CompanyDataService.csproj.user
+/src/services/ResourcesManager/.vs
+/src/services/ResourcesManager/.mono/registry/CurrentUser/software/microsoft/csdevkit/telemetry/persistentpropertybag/microsoft.visualstudio.code.servicehost
+/src/services/ResourcesManager/bin
+/src/services/ResourcesManager/obj
+/src/services/ResourcesManager/ResourcesManager.csproj.user

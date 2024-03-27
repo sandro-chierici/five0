@@ -1,4 +1,4 @@
-﻿namespace CompanyDataService.Business.Contracts;
+﻿namespace ResourcesManager.Business.Contracts;
 
 public enum ErrorCodes
 {

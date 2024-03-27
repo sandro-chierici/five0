@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using CompanyDataService.Business.Contracts;
+using ResourcesManager.Business.Contracts;
 
-namespace CompanyDataService.Api.V1;
+namespace ResourcesManager.Api.V1;
 
 [Route("api/v1/[Controller]")]
 [ApiController]

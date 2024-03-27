@@ -1,4 +1,4 @@
-﻿namespace CompanyDataService.Api.V1;
+﻿namespace ResourcesManager.Api.V1;
 
 
 public class ApiBaseResponse
@@ -18,7 +18,7 @@ public class ApiBaseResponse
     public ErrorResponse? Error { get; init; }
 
     public ApiBaseResponse(
-        string source = "five0 Resource Manager", 
+        string source = "five0 Resources Manager", 
         string ver = "1.0")
     {
         Metadata = new MetadataResponse(source, ver);
@@ -27,7 +27,7 @@ public class ApiBaseResponse
     public ApiBaseResponse(
     string error,
     string? errorDescription = null,
-    string source = "five0 Resource Manager",
+    string source = "five0 Resources Manager",
     string ver = "1.0")
     {
         Metadata = new MetadataResponse(source, ver);
@@ -36,7 +36,7 @@ public class ApiBaseResponse
 
     public ApiBaseResponse(
     object data,
-    string source = "five0 Resource Manager",
+    string source = "five0 Resources Manager",
     string ver = "1.0")
     {
         Metadata = new MetadataResponse(source, ver);
