@@ -12,7 +12,7 @@ services:
       - 5432:5432
     environment:
       POSTGRES_PASSWORD: five0_rm
-      POSTGRES_EMAIL: xxxxxx@mail.com
+      POSTGRES_EMAIL: xxxxx@mail.com
     networks:
       - five0_net
 
@@ -29,9 +29,28 @@ services:
     networks:
       - five0_net
 
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    build:
+      context: .
+      args:
+        - hostname=five0_rabbitmq_1
+    restart: always
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_config:/etc/rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - five0_net
+
+
 networks:
   five0_net:
     #driver: bridge
 volumes:
   db-data:
   pgadmin-config:
+  rabbitmq_data:
+  rabbitmq_config:
