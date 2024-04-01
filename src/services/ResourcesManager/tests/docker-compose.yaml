@@ -1,5 +1,12 @@
-# Use postgres/example user/password credentials
-version: '3.8'
+# 
+#
+# Run with 
+#  docker compose -f ./docker-compose.yaml -p five0 up -d
+#
+#
+#
+
+version: '3.9'
 
 #-----------------
 #Enabling Plugins, see https://hub.docker.com/_/rabbitmq
@@ -7,6 +14,11 @@ version: '3.8'
 #You can also mount a file at /etc/rabbitmq/enabled_plugins with contents as an erlang list of atoms ending with a period
 #Example enabled_plugins
 ##[rabbitmq_federation_management,rabbitmq_management,rabbitmq_mqtt,rabbitmq_stomp].
+
+configs:
+  rabbitmq_plugins:
+    content: |
+      [rabbitmq_mqtt, rabbitmq_management].
 
 services:
 
@@ -37,14 +49,10 @@ services:
       - five0_net
 
   rabbitmq:
-    build:
-      context: .
-      dockerfile_inline: |
-        FROM rabbitmq:3.13-management-alpine
-        RUN rabbitmq-plugins enable --offline rabbitmq_mqttd 
+    image: rabbitmq:3.13-management-alpine
     configs:
-      - source: rabbitmq_config
-        target: /etc/rabbitmq/enabled_plugins
+      - source: rabbitmq_plugins
+        target: /etc/rabbitmq/enabled_plugins  
     restart: always
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
@@ -58,6 +66,7 @@ services:
 networks:
   five0_net:
     #driver: bridge
+
 volumes:
   db-data:
   pgadmin-config:
