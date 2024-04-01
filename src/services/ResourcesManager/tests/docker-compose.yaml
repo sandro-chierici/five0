@@ -1,6 +1,13 @@
 # Use postgres/example user/password credentials
 version: '3.8'
 
+#-----------------
+#Enabling Plugins, see https://hub.docker.com/_/rabbitmq
+#
+#You can also mount a file at /etc/rabbitmq/enabled_plugins with contents as an erlang list of atoms ending with a period
+#Example enabled_plugins
+##[rabbitmq_federation_management,rabbitmq_management,rabbitmq_mqtt,rabbitmq_stomp].
+
 services:
 
   db:
@@ -12,7 +19,7 @@ services:
       - 5432:5432
     environment:
       POSTGRES_PASSWORD: five0_rm
-      POSTGRES_EMAIL: xxxxx@mail.com
+      POSTGRES_EMAIL: esseciacca22@gmail.com
     networks:
       - five0_net
 
@@ -25,16 +32,19 @@ services:
       - 8001:80
     environment:
       PGADMIN_DEFAULT_PASSWORD: SuperSecret
-      PGADMIN_DEFAULT_EMAIL: xxxxxx@mail.com
+      PGADMIN_DEFAULT_EMAIL: esseciacca22@gmail.com
     networks:
       - five0_net
 
   rabbitmq:
-    image: rabbitmq:3.13-management
     build:
       context: .
-      args:
-        - hostname=five0_rabbitmq_1
+      dockerfile_inline: |
+        FROM rabbitmq:3.13-management-alpine
+        RUN rabbitmq-plugins enable --offline rabbitmq_mqttd 
+    configs:
+      - source: rabbitmq_config
+        target: /etc/rabbitmq/enabled_plugins
     restart: always
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
@@ -44,7 +54,6 @@ services:
       - 15672:15672
     networks:
       - five0_net
-
 
 networks:
   five0_net:
