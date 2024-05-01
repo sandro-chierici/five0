@@ -21,7 +21,10 @@ func main() {
 		os.Exit(0)
 	}()
 
-	fmt.Println("Waiting...")
+	fmt.Println("Starting")
+
+	// start connections
+	go connectRabbit()
 
 	done := make(chan bool, 1)
 	<-done
@@ -37,4 +40,8 @@ func parseFlags() (topic string, rabbitQueue string) {
 	flag.Parse()
 	fmt.Printf("program settings - topic: %s, queue: %s\n", *tp, *rq)
 	return *tp, *rq
+}
+
+func connectRabbit() {
+
 }
