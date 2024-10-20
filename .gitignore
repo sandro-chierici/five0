@@ -7,4 +7,6 @@
 /src/services/ResourcesManager/bin
 /src/services/ResourcesManager/obj
 /src/services/ResourcesManager/ResourcesManager.csproj.user
+/src/services/RabbitKafkaBridge/vendor/
+.mono
 /.vs/five0/v17
