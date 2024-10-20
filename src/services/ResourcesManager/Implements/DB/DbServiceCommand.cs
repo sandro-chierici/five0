@@ -27,6 +27,6 @@ public class DbServiceCommand(IDbContextFactory<ResourceContext> contextFactory)
 
     public async ValueTask<QueryResponse<int>> InsertAsync(Resource resource)
     {
-        return new QueryResponse<int> { Value = 0 };
+        return await Task.Run(() =>  new QueryResponse<int> { Value = 0 });
     }
 }
