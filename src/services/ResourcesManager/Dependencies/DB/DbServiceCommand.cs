@@ -2,7 +2,7 @@
 using ResourcesManager.Business.Contracts;
 using ResourcesManager.Business.DataModel;
 
-namespace ResourcesManager.Implements.DB;
+namespace ResourcesManager.Dependencies.DB;
 
 public class DbServiceCommand(IDbContextFactory<ResourceContext> contextFactory) : IDatabaseCommand
 {

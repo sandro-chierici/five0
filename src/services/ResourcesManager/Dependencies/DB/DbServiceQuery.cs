@@ -3,7 +3,7 @@ using ResourcesManager.Business.Contracts;
 using ResourcesManager.Business.DataModel;
 using System.Linq.Expressions;
 
-namespace ResourcesManager.Implements.DB;
+namespace ResourcesManager.Dependencies.DB;
 
 public class DbServiceQuery(IDbContextFactory<ResourceContext> contextFactory) : IDatabaseQuery
 {
