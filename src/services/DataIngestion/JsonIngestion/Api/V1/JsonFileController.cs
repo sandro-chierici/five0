@@ -1,3 +1,4 @@
+using JsonIngestion.Implementation;
 using JsonIngestion.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -14,7 +15,8 @@ namespace JsonIngestion.Api.V1;
 [ApiController]
 [Route("api/v1/ingestion/json")]
 public class JsonFileController(ILogger<JsonFileController> logger, 
-    ITokenPersistence tokenPersistence) : ControllerBase
+    ITokenPersistence tokenPersistence,
+    DataProcessor processor) : ControllerBase
 {
     /// <summary>
     /// Create token for upload
@@ -52,7 +54,6 @@ public class JsonFileController(ILogger<JsonFileController> logger,
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
 
-        // Check if the file is a JSON file
         if (file.ContentType != "application/json")
         {
             logger.LogWarning("Invalid file type, not recognized as a  JSON file.");
@@ -86,14 +87,21 @@ public class JsonFileController(ILogger<JsonFileController> logger,
             return BadRequest("Invalid token, userId not found");
         }
 
-        var filePath = Path.GetTempFileName();
-
+        // reading file
         try
         {
-            using (var stream = new FileStream(filePath, FileMode.Create))
-                await file.CopyToAsync(stream);
-        }
-        catch (Exception ex)
+            using var memstream = new MemoryStream();
+            await file.CopyToAsync(memstream);
+
+            memstream.Position = 0;
+
+            var jsonDocument = JsonDocument.Parse(memstream);
+            logger.LogInformation("JSON content is valid.");
+
+            // enqueued for processing
+            processor.EnqueueData(jsonDocument);
+        } 
+        catch (Exception ex) 
         {
             logger.LogError($"Error saving file: {ex.Message}");
             return StatusCode(500, "Error saving file.");
@@ -101,39 +109,6 @@ public class JsonFileController(ILogger<JsonFileController> logger,
 
         logger.LogInformation("File uploaded successfully.");
 
-        // Read the file content
-        string fileContent;
-        using (var reader = new StreamReader(filePath))
-        {
-            fileContent = await reader.ReadToEndAsync();
-        }
-
-        // Validate and extract data from JSON content
-        try
-        {
-            var jsonDocument = JsonDocument.Parse(fileContent);
-            logger.LogInformation("JSON content is valid.");
-
-            // Extract specific data
-            var rootElement = jsonDocument.RootElement;
-            if (rootElement.TryGetProperty("specificProperty", out JsonElement specificProperty))
-            {
-                var extractedData = specificProperty.GetString();
-                logger.LogInformation($"Extracted data: {extractedData}");
-            }
-            else
-            {
-                logger.LogWarning("Specific property not found in JSON.");
-            }
-        }
-        catch (JsonException ex)
-        {
-            logger.LogError($"Invalid JSON content: {ex.Message}");
-            return BadRequest("Invalid JSON content.");
-        }
-
-        // Further processing of the JSON content can be done here
-
-        return Ok(new { message = "File uploaded and JSON content is valid." });
+        return Accepted(new { message = "File uploaded and JSON content is valid and it will processed." });
     }
 }

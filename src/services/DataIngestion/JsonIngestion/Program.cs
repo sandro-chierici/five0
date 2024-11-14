@@ -1,4 +1,4 @@
-using JsonIngestion.Dependencies;
+using JsonIngestion.Implementation;
 using JsonIngestion.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +20,8 @@ builder.Services.AddSwaggerGen();
 
 // set my services
 builder.Services.AddSingleton<ITokenPersistence, MemoryTokenPersistence>();
+builder.Services.AddSingleton<DataProcessor>();
+
 
 var app = builder.Build();
 

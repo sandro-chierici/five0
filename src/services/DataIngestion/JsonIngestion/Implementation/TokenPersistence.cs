@@ -1,7 +1,7 @@
 ﻿using JsonIngestion.Services;
 using System.Collections.Concurrent;
 
-namespace JsonIngestion.Dependencies;
+namespace JsonIngestion.Implementation;
 
 public class MemoryTokenPersistence(ILogger<MemoryTokenPersistence> logger) : ITokenPersistence
 {

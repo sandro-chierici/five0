@@ -14,14 +14,14 @@ Content-Type: application/json
 
 ### Upload JSON File
 POST {{baseUrl}}/api/v1/ingestion/json/upload
-Content-Type: multipart/form-data
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryilhrIWvBeO8R2OKV
 five0-jsonupload: {{login.response.body.$.token}}
 
---boundary
+------WebKitFormBoundaryilhrIWvBeO8R2OKV
 Content-Disposition: form-data; name="file"; filename="test.json"
 Content-Type: application/json
 
 {
   "specificProperty": "exampleValue"
 }
---boundary--
+------WebKitFormBoundaryilhrIWvBeO8R2OKV--
