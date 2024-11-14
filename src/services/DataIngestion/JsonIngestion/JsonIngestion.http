@@ -1,0 +1,27 @@
+@baseUrl = http://localhost:5124
+
+@userId=sandro.chierici
+
+### Create Upload Token
+# @name login
+POST {{baseUrl}}/api/v1/ingestion/json/preflight/{{userId}}
+Content-Type: application/json
+
+{
+  "userId": {{userId}}
+}
+
+
+### Upload JSON File
+POST {{baseUrl}}/api/v1/ingestion/json/upload
+Content-Type: multipart/form-data
+five0-jsonupload: {{login.response.body.$.token}}
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="test.json"
+Content-Type: application/json
+
+{
+  "specificProperty": "exampleValue"
+}
+--boundary--

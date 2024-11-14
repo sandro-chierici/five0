@@ -10,3 +10,7 @@
 /src/services/RabbitKafkaBridge/vendor/
 .mono
 /.vs/five0/v17
+/src/services/DataIngestion/JsonIngestion/.vs
+/.vs
+/src/services/DataIngestion/JsonIngestion/bin/Debug/net8.0
+/src/services/DataIngestion/JsonIngestion/obj
