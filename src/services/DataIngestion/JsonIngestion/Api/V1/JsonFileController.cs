@@ -1,3 +1,4 @@
+using JsonIngestion.DataModels;
 using JsonIngestion.Implementation;
 using JsonIngestion.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,8 @@ namespace JsonIngestion.Api.V1;
 [Route("api/v1/ingestion/json")]
 public class JsonFileController(ILogger<JsonFileController> logger, 
     ITokenPersistence tokenPersistence,
-    DataProcessor processor) : ControllerBase
+    DataProcessor processor,
+    IConfiguration config) : ControllerBase
 {
     /// <summary>
     /// Create token for upload
@@ -60,12 +62,14 @@ public class JsonFileController(ILogger<JsonFileController> logger,
             return BadRequest("Invalid file type, not recognized as a  JSON file.");
         }
 
-        if (file.Length > 10485760)
-        {
-            logger.LogWarning("File size exceeds the limit of 10MB.");
-            return BadRequest("File size exceeds the limit of 10MB.");
-        }
+        var maxBytes = config.GetValue<int?>("MaxBytesFilelUpload") ?? 10485760;
 
+        if (file.Length > maxBytes)
+        {
+            logger.LogWarning($"File size exceeds the limit of {maxBytes} bytes");
+            return BadRequest($"File size exceeds the limit of {maxBytes} bytes");
+        }
+        
         // Secure Check, token is required from headers
         // for getting userId
         if (!Request.Headers.TryGetValue("five0-jsonupload", out var tokenValues))
@@ -99,7 +103,10 @@ public class JsonFileController(ILogger<JsonFileController> logger,
             logger.LogInformation("JSON content is valid.");
 
             // enqueued for processing
-            processor.EnqueueData(jsonDocument);
+            processor.EnqueueData(new InputDataDto(
+                jsonDocument, 
+                Request.Headers.Origin.ToString(), 
+                DateTimeOffset.UtcNow));
         } 
         catch (Exception ex) 
         {

@@ -6,6 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
 // add console logger service
 builder.Services.AddLogging(config =>
 {
