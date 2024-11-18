@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jsoningestion-deployment
+  namespace: five0-ingestion
+  labels:
+    app: jsoningestion-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: jsoningestion
+  template:
+    metadata:
+      labels:
+        app: jsoningestion
+    spec:
+      containers:
+      - name: jsoningestion
+        image: sandrochierici/five0:jsoningestion-latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jsoningestion-svc
+  namespace: five0-ingestion
+spec:
+  selector:
+    app: jsoningestion-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
