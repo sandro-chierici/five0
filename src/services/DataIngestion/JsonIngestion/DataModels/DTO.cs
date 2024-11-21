@@ -3,4 +3,6 @@ using System.Text.Json;
 
 namespace JsonIngestion.DataModels;
 
-public record InputDataDto(JsonDocument Document, string HostSource, DateTimeOffset timestampUTC);
+public record RequestDetail(string? Host, string? HostOrigin, long? fileLength, DateTimeOffset TimestampUTC);
+
+public record InputDataDto(JsonDocument Document, RequestDetail? request);
