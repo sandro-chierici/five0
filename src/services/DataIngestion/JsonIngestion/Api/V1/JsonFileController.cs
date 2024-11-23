@@ -119,9 +119,10 @@ public class JsonFileController(ILogger<JsonFileController> logger,
                 Request.Host.ToString(),
                 Request.Headers.Origin.ToString(),
                 file.Length,
+                UserId: userId!,
                 DateTimeOffset.UtcNow);
 
-            logger.LogInformation("JSON content is valid.");
+            logger.LogInformation($"JSON content is valid from {request.HostOrigin}, length {file.Length}");
 
             // enqueued for processing
             processor.EnqueueData(new InputDataDto(
