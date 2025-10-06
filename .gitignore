@@ -12,8 +12,7 @@
 /.vs/five0/v17
 /src/services/DataIngestion/JsonIngestion/.vs
 /.vs
-/src/services/DataIngestion/JsonIngestion/bin/Debug/net8.0
 /src/services/DataIngestion/JsonIngestion/obj
-/src/services/DataIngestion/JsonIngestion/bin/Release/net8.0
+/src/services/DataIngestion/JsonIngestion/bin
 /src/services/DataIngestion/JsonIngestion/Properties/PublishProfiles
 /src/services/DataIngestion/JsonIngestion/JsonIngestion.csproj.user
