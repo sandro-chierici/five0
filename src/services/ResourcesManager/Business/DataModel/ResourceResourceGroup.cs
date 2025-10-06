@@ -7,5 +7,4 @@ public class ResourceResourceGroup
     public long ResourceGroupId { get; set; }
     public DateTimeOffset? CreatedDateUtc { get; set; } = DateTimeOffset.UtcNow;
 
-    public ResourceResourceGroup() { }
 }
