@@ -16,19 +16,18 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
         return Ok(new OkResponse());
     }
 
+    // [HttpGet]
+    // public async Task<ActionResult<ApiBaseResponse>> GetAll()
+    // {
+    //     var resp = await dbQuery.GetResourcesAsync(_ => true);
 
-    [HttpGet]
-    public async Task<ActionResult<ApiBaseResponse>> GetAll()
-    {
-        var resp = await dbQuery.GetResourcesAsync(_ => true);
+    //     if (resp.IsError)
+    //     {
+    //         return NotFound(new ErrorResponse(resp.Error?.errorMessage ?? "Not specified error"));
+    //     }
 
-        if (resp.IsError)
-        {
-            return NotFound(new ErrorResponse(resp.Error?.errorMessage ?? "Not specified error"));
-        }
-
-        return Ok(new DataResponse(resp.Value?.ToList() ?? new()));
-    }
+    //     return Ok(new DataResponse(resp.Value?.ToList() ?? new()));
+    // }
 
     [HttpGet("{id:long}")]
     public async Task<ActionResult<ApiBaseResponse>> GetById(long id)
@@ -42,6 +41,20 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
 
         return Ok(new DataResponse(resp.Value?.ToList() ?? new()));
     }
+
+    [HttpGet("tenant/{id:long}/{name?}")]
+    public async Task<ActionResult<ApiBaseResponse>> GetByNameAndTenant(long id, string? name)
+    {
+        var resp = await dbQuery.GetResourcesAsync(res => res.TenantId == id &&
+            (name == null || res.Name != null && res.Name.ToLower().StartsWith(name.ToLower())));
+
+        if (resp.IsError)
+        {
+            return NotFound(new ErrorResponse(resp.Error?.errorMessage ?? "Not specified error"));
+        }
+
+        return Ok(new DataResponse(resp.Value?.ToList() ?? new()));
+    }    
 
     [HttpPost]
     public void Post([FromBody] string value)

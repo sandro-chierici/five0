@@ -1,11 +1,11 @@
--- SQL script to seed 10 resources for testing, all related to tenant with id 1
--- Assumes table name is Resource and columns match the Resource class
+-- SQL script for Postgres DB to seed 10 resources for testing, all related to tenant with id 1
 
-INSERT into Tenant (Id, Name) VALUES (1, 'Test Tenant 1');    
 
-INSERT into ResourceType (Id, Name) VALUES (1, 'Test Resource Type 1');    
+INSERT into public."Tenants" ("Id", "Name") VALUES (1, 'Test Tenant 1');    
 
-INSERT INTO Resource (TenantId, Name, Description, ResourceTypeId)
+INSERT into public."ResourceTypes" ("Id", "TenantId", "Name") VALUES (1, 1, 'Test Resource Type 1');    
+
+INSERT INTO public."Resources" ("TenantId", "Name", "Description", "ResourceTypeId")
 VALUES
   (1, 'Resource 1', 'Test resource 1', 1),
   (1, 'Resource 2', 'Test resource 2', 1),
