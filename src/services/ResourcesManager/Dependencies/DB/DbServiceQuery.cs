@@ -7,14 +7,16 @@ namespace ResourcesManager.Dependencies.DB;
 
 public class DbServiceQuery(IDbContextFactory<ResourceContext> contextFactory) : IDatabaseQuery
 {
-    public async ValueTask<QueryResponse<List<Resource>>> GetResourcesAsync(Expression<Func<Resource, bool>> filter, int? limit)
+    public async ValueTask<QueryResponse<List<Resource>>> GetResourcesAsync(
+        Expression<Func<Resource, bool>> filter,
+        int limit = ResourceRules.ResourcesQueryLimit)
     {
         try
         {
             using var ctx = await contextFactory.CreateDbContextAsync();
             var data = await ctx.Resources
                 .Where(filter)
-                .Take(limit ?? 1000) // security limit
+                .Take(limit > 0 ? limit : ResourceRules.ResourcesQueryLimit) // security limit
                 .ToListAsync();
 
             return new() { Value = data };

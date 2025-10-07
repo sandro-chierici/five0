@@ -44,7 +44,7 @@ public class ResourceContext : DbContext
         modelBuilder.Entity<ResourceHierarchy>().Property(e => e.Id).ValueGeneratedOnAdd();
 
         modelBuilder.Entity<ResourceStatus>().HasKey(e => e.Id);
-        modelBuilder.Entity<ResourceStatus>().Property(e => e.Id).ValueGeneratedOnAdd();    
+        modelBuilder.Entity<ResourceStatus>().Property(e => e.Id).ValueGeneratedOnAdd();
 
         modelBuilder.Entity<ResourceStatusHistory>().HasKey(e => e.Id);
         modelBuilder.Entity<ResourceStatusHistory>().Property(e => e.Id).ValueGeneratedOnAdd();
@@ -54,6 +54,7 @@ public class ResourceContext : DbContext
             .WithMany()
             .HasForeignKey(rsh => rsh.ResourceId)
             .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder.Entity<ResourceStatusHistory>()
             .HasOne<ResourceStatus>()
             .WithMany()
@@ -64,6 +65,91 @@ public class ResourceContext : DbContext
             .HasOne<Tenant>()
             .WithMany()
             .HasForeignKey(r => r.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ResourceHierarchy>()
+            .HasOne<Resource>()
+            .WithMany()
+            .HasForeignKey(rh => rh.ParentResourceId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ResourceHierarchy>()
+            .HasOne<Resource>()
+            .WithMany()
+            .HasForeignKey(rh => rh.ChildResourceId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ResourceTypeHierarchy>()
+            .HasOne<ResourceType>()
+            .WithMany()
+            .HasForeignKey(rth => rth.ResourceTypeParentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ResourceTypeHierarchy>()
+            .HasOne<ResourceType>()
+            .WithMany()
+            .HasForeignKey(rth => rth.ResourceTypeChildId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ResourceResourceGroup>()
+            .HasOne<Resource>()
+            .WithMany()
+            .HasForeignKey(rrg => rrg.ResourceId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ResourceResourceGroup>()
+            .HasOne<ResourceGroup>()
+            .WithMany()
+            .HasForeignKey(rrg => rrg.ResourceGroupId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Resource>()
+            .HasOne<ResourceType>()
+            .WithMany()
+            .HasForeignKey(r => r.ResourceTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+
+        modelBuilder.Entity<ResourceGroup>()
+            .HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(rg => rg.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ResourceType>()
+            .HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(rt => rt.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ResourceTypeHierarchy>()
+            .HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(rth => rth.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ResourceHierarchy>()
+            .HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(rh => rh.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ResourceResourceGroup>()
+            .HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(rrg => rrg.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ResourceStatus>()
+            .HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(rs => rs.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ResourceStatusHistory>()
+            .HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(rsh => rsh.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
 
     }

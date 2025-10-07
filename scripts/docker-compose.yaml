@@ -16,10 +16,10 @@ version: '3.9'
 #Example enabled_plugins
 ##[rabbitmq_federation_management,rabbitmq_management,rabbitmq_mqtt,rabbitmq_stomp].
 
-configs:
-  rabbitmq_plugins:
-    content: |
-      [rabbitmq_mqtt,rabbitmq_web_mqtt,rabbitmq_management].
+# configs:
+#   rabbitmq_plugins:
+#     content: |
+#       [rabbitmq_mqtt,rabbitmq_web_mqtt,rabbitmq_management].
 
 services:
 
@@ -49,44 +49,44 @@ services:
     networks:
       - five0_net
 
-  rabbitmq:
-    image: rabbitmq:3.13-management-alpine
-    configs:
-      - source: rabbitmq_plugins
-        target: /etc/rabbitmq/enabled_plugins  
-    restart: always
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-      - rabbitmq_config:/etc/rabbitmq
-    ports:
-      - 5672:5672
-      - 15672:15672
-      - 1883:1883
-      - 8883:8883
-      - 15675:15675
-      - 15676:15676
-    networks:
-      - five0_net
+  # rabbitmq:
+  #   image: rabbitmq:3.13-management-alpine
+  #   configs:
+  #     - source: rabbitmq_plugins
+  #       target: /etc/rabbitmq/enabled_plugins  
+  #   restart: always
+  #   volumes:
+  #     - rabbitmq_data:/var/lib/rabbitmq
+  #     - rabbitmq_config:/etc/rabbitmq
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
+  #     - 1883:1883
+  #     - 8883:8883
+  #     - 15675:15675
+  #     - 15676:15676
+  #   networks:
+  #     - five0_net
 
-  kafka:
-    image: bitnami/kafka:latest
-    ports:
-      - "9092:9092"
-    volumes:
-      - "kafka_data:/bitnami"
-    environment:
-      # KRaft settings
-      - KAFKA_CFG_NODE_ID=0
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
-      # Listeners
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-    networks:
-      - five0_net      
+  # kafka:
+  #   image: bitnami/kafka:latest
+  #   ports:
+  #     - "9092:9092"
+  #   volumes:
+  #     - "kafka_data:/bitnami"
+  #   environment:
+  #     # KRaft settings
+  #     - KAFKA_CFG_NODE_ID=0
+  #     - KAFKA_CFG_PROCESS_ROLES=controller,broker
+  #     - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+  #     # Listeners
+  #     - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+  #     - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092
+  #     - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+  #     - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+  #     - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+  #   networks:
+  #     - five0_net      
 
 networks:
   five0_net:
@@ -95,6 +95,6 @@ networks:
 volumes:
   db-data:
   pgadmin-config:
-  rabbitmq_data:
-  rabbitmq_config:
-  kafka_data:  
+  # rabbitmq_data:
+  # rabbitmq_config:
+  # kafka_data:  

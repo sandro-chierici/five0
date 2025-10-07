@@ -6,6 +6,7 @@ namespace ResourcesManager.Business.DataModel;
 public class ResourceStatus
 {
     public int Id { get; set; }
+    public long TenantId { get; set; }    
     public required string Name { get; init; }
     public string? Description { get; set; }
 }
@@ -14,9 +15,9 @@ public class ResourceStatus
 public class ResourceStatusHistory
 {
     public int Id { get; set; }
-
+    public long TenantId { get; set; }
     // Foreign key to Resource
-    public int ResourceId { get; set; }
+    public long ResourceId { get; set; }
 
     // Foreign key to ResourceStatusEnum
     public int ResourceStatusEnumId { get; set; }
