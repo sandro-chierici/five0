@@ -3,7 +3,7 @@ using ResourcesManager.Business.Contracts;
 
 namespace ResourcesManager.Api.V1;
 
-[Route("api/v1/[Controller]")]
+[Route("api/v1/resources")]
 [ApiController]
 public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbCommand) : ControllerBase
 {
@@ -39,7 +39,7 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
             return NotFound(new ErrorResponse(resp.Error?.errorMessage ?? "Not specified error"));
         }
 
-        return Ok(new DataResponse(resp.Value?.ToList() ?? new()));
+        return Ok(new DataResponse(resp.Result?.ToList() ?? new()));
     }
 
     [HttpGet("tenant/{id:long}/{name?}")]
@@ -53,7 +53,7 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
             return NotFound(new ErrorResponse(resp.Error?.errorMessage ?? "Not specified error"));
         }
 
-        return Ok(new DataResponse(resp.Value?.ToList() ?? new()));
+        return Ok(new DataResponse(resp.Result?.ToList() ?? new()));
     }    
 
     [HttpPost]

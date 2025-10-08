@@ -17,7 +17,7 @@ public class DbServiceCommand(IDbContextFactory<ResourceContext> contextFactory)
             using var ctx = await contextFactory.CreateDbContextAsync();
             await ctx.Database.EnsureCreatedAsync();
 
-            return new() { Value = "OK" };
+            return new() { Result = "OK" };
         }
         catch (Exception ex)
         {
@@ -27,6 +27,6 @@ public class DbServiceCommand(IDbContextFactory<ResourceContext> contextFactory)
 
     public async ValueTask<QueryResponse<int>> InsertAsync(Resource resource)
     {
-        return await Task.Run(() =>  new QueryResponse<int> { Value = 0 });
+        return await Task.Run(() =>  new QueryResponse<int> { Result = 0 });
     }
 }

@@ -7,4 +7,6 @@ public interface IDatabaseQuery
 {
     ValueTask<QueryResponse<List<Resource>>> GetResourcesAsync(
         Expression<Func<Resource, bool>> filter, int limit = ResourceRules.ResourcesQueryLimit);
+
+    ValueTask<QueryResponse<List<Resource>>> GetResourcesAsync(string sql);
 }

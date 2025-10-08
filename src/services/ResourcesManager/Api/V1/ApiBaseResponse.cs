@@ -1,4 +1,7 @@
-﻿namespace ResourcesManager.Api.V1;
+﻿using ResourcesManager.Business.Contracts;
+using ResourcesManager.Business.DataModel;
+
+namespace ResourcesManager.Api.V1;
 
 
 public class ApiBaseResponse
@@ -18,8 +21,8 @@ public class ApiBaseResponse
     public ErrorResponse? Error { get; init; }
 
     public ApiBaseResponse(
-        string source = "five0 Resources Manager", 
-        string ver = "1.0")
+        string source = ResourceRules.SourceName, 
+        string ver = ResourceRules.SourceVersion)
     {
         Metadata = new MetadataResponse(source, ver);
     }
