@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ResourcesManager.Business.DataModel;
 
-namespace ResourcesManager.Dependencies.DB;
+namespace ResourcesManager.Infrastructure.DB;
 
 public class ResourceContext : DbContext
 {

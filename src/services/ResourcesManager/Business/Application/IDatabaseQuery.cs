@@ -1,7 +1,7 @@
 using ResourcesManager.Business.DataModel;
 using System.Linq.Expressions;
 
-namespace ResourcesManager.Business.Contracts;
+namespace ResourcesManager.Business.Application;
 
 public interface IDatabaseQuery
 {

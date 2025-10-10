@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ResourcesManager.Business.Contracts;
+using ResourcesManager.Business.Application;
 using ResourcesManager.Business.DataModel;
 
-namespace ResourcesManager.Dependencies.DB;
+namespace ResourcesManager.Infrastructure.DB;
 
 public class DbServiceCommand(IDbContextFactory<ResourceContext> contextFactory) : IDatabaseCommand
 {
@@ -17,7 +17,7 @@ public class DbServiceCommand(IDbContextFactory<ResourceContext> contextFactory)
             using var ctx = await contextFactory.CreateDbContextAsync();
             await ctx.Database.EnsureCreatedAsync();
 
-            return new() { Result = "OK" };
+            return new() { Results = "OK" };
         }
         catch (Exception ex)
         {
@@ -27,6 +27,6 @@ public class DbServiceCommand(IDbContextFactory<ResourceContext> contextFactory)
 
     public async ValueTask<QueryResponse<int>> InsertAsync(Resource resource)
     {
-        return await Task.Run(() =>  new QueryResponse<int> { Result = 0 });
+        return await Task.Run(() => new QueryResponse<int> { Results = 0 });
     }
 }

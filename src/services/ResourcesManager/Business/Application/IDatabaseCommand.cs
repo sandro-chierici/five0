@@ -1,6 +1,6 @@
 ﻿using ResourcesManager.Business.DataModel;
 
-namespace ResourcesManager.Business.Contracts;
+namespace ResourcesManager.Business.Application;
 
 public interface IDatabaseCommand
 {

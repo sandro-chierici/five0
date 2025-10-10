@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using ResourcesManager.Business.Contracts;
-using ResourcesManager.Dependencies.DB;
+using ResourcesManager.Business.Application;
+using ResourcesManager.Infrastructure.DB;
 
 var builder = WebApplication.CreateBuilder(args);
 

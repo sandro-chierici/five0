@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ResourcesManager.Business.Contracts;
+using ResourcesManager.Business.Application;
 using ResourcesManager.Business.DataModel;
 using System.Linq.Expressions;
 
-namespace ResourcesManager.Dependencies.DB;
+namespace ResourcesManager.Infrastructure.DB;
 
 public class DbServiceQuery(IDbContextFactory<ResourceContext> contextFactory) : IDatabaseQuery
 {
@@ -26,10 +26,11 @@ public class DbServiceQuery(IDbContextFactory<ResourceContext> contextFactory) :
 
             return new()
             {
-                Result = data,
-                Metadata = {
-                    ResultCount = data.Count,
-                    ExecMillis = tm.ElapsedMilliseconds
+                Results = data,
+                Metadata =
+                {
+                    RowsCount = data.Count,
+                    QueryExecutionMillis = tm.ElapsedMilliseconds
                 }
             };
         }
@@ -54,11 +55,11 @@ public class DbServiceQuery(IDbContextFactory<ResourceContext> contextFactory) :
 
             return new()
             {
-                Result = data,
+                Results = data,
                 Metadata =
                 {
-                    ResultCount = data.Count,
-                    ExecMillis = tm.ElapsedMilliseconds
+                    RowsCount = data.Count,
+                    QueryExecutionMillis = tm.ElapsedMilliseconds
                 }
             };
         }

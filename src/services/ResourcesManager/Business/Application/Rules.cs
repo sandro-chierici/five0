@@ -1,4 +1,4 @@
-namespace ResourcesManager.Business.Contracts;
+namespace ResourcesManager.Business.Application;
 
 public static class ResourceRules
 {
