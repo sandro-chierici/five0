@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ResourcesManager.Business.Application;
-using ResourcesManager.Business.DataModel;
+using ResourcesManager.Business.DataModel.Resources;
 
 namespace ResourcesManager.Infrastructure.DB;
 

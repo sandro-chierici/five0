@@ -1,6 +1,6 @@
 using System;
 
-namespace ResourcesManager.Business.DataModel;
+namespace ResourcesManager.Business.DataModel.Resources;
 
 // Enumerative class for possible statuses
 public class ResourceStatus

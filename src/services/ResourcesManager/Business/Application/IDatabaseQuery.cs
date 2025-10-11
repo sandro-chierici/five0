@@ -1,4 +1,4 @@
-using ResourcesManager.Business.DataModel;
+using ResourcesManager.Business.DataModel.Resources;
 using System.Linq.Expressions;
 
 namespace ResourcesManager.Business.Application;

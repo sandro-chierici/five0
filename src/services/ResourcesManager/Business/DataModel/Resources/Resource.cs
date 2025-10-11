@@ -1,4 +1,4 @@
-﻿namespace ResourcesManager.Business.DataModel;
+﻿namespace ResourcesManager.Business.DataModel.Resources;
 
 /// <summary>
 /// Resource def
