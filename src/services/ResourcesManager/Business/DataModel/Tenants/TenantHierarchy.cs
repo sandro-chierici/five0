@@ -1,6 +1,6 @@
 namespace ResourcesManager.Business.DataModel.Tenants;
 
-public class TenantTree
+public class TenantHierarchy
 {
     public long Id { get; set; }
     public long TenantParentId { get; set; }

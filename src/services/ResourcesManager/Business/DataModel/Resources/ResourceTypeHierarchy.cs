@@ -5,9 +5,9 @@
 /// </summary>
 public class ResourceTypeHierarchy
 {
-    public int Id { get; set; }
-    public long TenantId { get; set; }
-    public int ResourceTypeParentId { get; set; }
-    public int ResourceTypeChildId { get; set; }
-  
+    public long Id { get; set; }
+    public long? TenantId { get; set; }
+    public long ResourceTypeParentId { get; set; }
+    public long ResourceTypeChildId { get; set; }
+
 }

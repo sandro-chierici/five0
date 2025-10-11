@@ -12,9 +12,17 @@ builder.Services.AddDbContextFactory<ResourceContext>(
     (optionsBuilder) =>
     {
         optionsBuilder.UseNpgsql(
-            builder.Configuration.GetConnectionString("ResourcesManagerDb") 
-            ?? @"Host=localhost;Username=postgres;Password=five0_rm;Database=five0_rm");
+            builder.Configuration.GetConnectionString("ResourcesDb") 
+            ?? @"Host=localhost;Username=postgres;Password=five0_rm;Database=five0_resources");
     });
+
+builder.Services.AddDbContextFactory<TenantContext>(
+    (optionsBuilder) =>
+    {
+        optionsBuilder.UseNpgsql(
+            builder.Configuration.GetConnectionString("TenantsDb") 
+            ?? @"Host=localhost;Username=postgres;Password=five0_rm;Database=five0_tenants");
+    });    
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

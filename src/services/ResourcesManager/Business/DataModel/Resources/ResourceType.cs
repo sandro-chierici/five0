@@ -2,10 +2,10 @@
 
 public class ResourceType
 {
-    public int Id { get; set; }
-    public long TenantId { get; set; }
+    public long Id { get; set; }
+    public long? TenantId { get; set; }
 
-    public string? Name { get; set; }
+    public string? Code { get; set; }
     public string? Description { get; set; }
 
 }

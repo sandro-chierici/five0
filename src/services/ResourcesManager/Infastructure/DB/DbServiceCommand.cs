@@ -4,7 +4,9 @@ using ResourcesManager.Business.DataModel.Resources;
 
 namespace ResourcesManager.Infrastructure.DB;
 
-public class DbServiceCommand(IDbContextFactory<ResourceContext> contextFactory) : IDatabaseCommand
+public class DbServiceCommand(
+    IDbContextFactory<ResourceContext> resourceContextFactory,
+    IDbContextFactory<TenantContext> tenantContextFactory) : IDatabaseCommand
 {
     /// <summary>
     /// Create Database
@@ -14,10 +16,13 @@ public class DbServiceCommand(IDbContextFactory<ResourceContext> contextFactory)
     {
         try
         {
-            using var ctx = await contextFactory.CreateDbContextAsync();
-            await ctx.Database.EnsureCreatedAsync();
+            using var rctx = await resourceContextFactory.CreateDbContextAsync();
+            await rctx.Database.EnsureCreatedAsync();
 
-            return new() { Results = "OK" };
+            using var tctx = await tenantContextFactory.CreateDbContextAsync();
+            await tctx.Database.EnsureCreatedAsync();
+
+            return new() { Results = "OK Cowboy" };
         }
         catch (Exception ex)
         {

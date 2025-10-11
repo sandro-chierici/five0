@@ -1,12 +1,11 @@
-﻿namespace ResourcesManager.Business.DataModel.Tenants;
+namespace ResourcesManager.Business.DataModel.Tenants;
 
-public class Tenant
+public class Role
 {
     public long Id { get; set; }
-    public long TenantTypeId { get; set; }
-    public string? Code { get; set; }
+    public long? TenantId { get; set; }    
+    public string? RoleName { get; set; }
     public string? Alias { get; set; }
     public string? FactoryCode { get; set; }
     public string? Description { get; set;}
 }
-

@@ -12,8 +12,8 @@ public class UtilsController(IDatabaseCommand dbCommand) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ApiResponse>> EnsureDbCreated()
     {
-        await dbCommand.EnsureDBCreated();
+        var res = await dbCommand.EnsureDBCreated();
 
-        return ApiResponse.Ok();
+        return ApiResponse.DataResponse(res);
     }
 }

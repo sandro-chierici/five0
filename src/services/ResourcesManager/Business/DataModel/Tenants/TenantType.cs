@@ -1,9 +1,9 @@
-﻿namespace ResourcesManager.Business.DataModel.Tenants;
+namespace ResourcesManager.Business.DataModel.Tenants;
 
-public class Tenant
+
+public class TenantType
 {
     public long Id { get; set; }
-    public long TenantTypeId { get; set; }
     public string? Code { get; set; }
     public string? Alias { get; set; }
     public string? FactoryCode { get; set; }
