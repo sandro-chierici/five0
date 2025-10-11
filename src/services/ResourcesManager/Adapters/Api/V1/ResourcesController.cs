@@ -15,7 +15,7 @@ public class ResourcesController(IDatabaseQuery dbQuery) : ControllerBase
 
         if (resp.IsError)
         {
-            return BadRequest(ApiResponse.ErrorResponse(resp.Error?.errorMessage ?? "Request Error"));
+            return BadRequest(ApiResponse.ErrorResponse(resp.QueryError?.errorMessage ?? "Request Error"));
         }
 
         return Ok(ApiResponse.DataResponse(resp));
@@ -29,7 +29,7 @@ public class ResourcesController(IDatabaseQuery dbQuery) : ControllerBase
 
         if (resp.IsError)
         {
-            return BadRequest(ApiResponse.ErrorResponse(resp.Error?.errorMessage ?? "Request error"));
+            return BadRequest(ApiResponse.ErrorResponse(resp.QueryError?.errorMessage ?? "Request error"));
         }
 
         return Ok(ApiResponse.DataResponse(resp));

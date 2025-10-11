@@ -26,7 +26,7 @@ public class DbServiceCommand(
         }
         catch (Exception ex)
         {
-            return new() { Error = new Error(ex.Message, ErrorCodes.GenericError) };
+            return new() { QueryError = new Error(ex.Message, ErrorCodes.GenericError) };
         }
     }
 
