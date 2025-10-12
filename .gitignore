@@ -16,3 +16,4 @@
 /src/services/DataIngestion/JsonIngestion/bin
 /src/services/DataIngestion/JsonIngestion/Properties/PublishProfiles
 /src/services/DataIngestion/JsonIngestion/JsonIngestion.csproj.user
+/src/services/TimeService/timeservice
