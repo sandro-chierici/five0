@@ -6,11 +6,8 @@ namespace ResourcesManager.Adapters.Api.V1.ApiInterfaces;
 
 public record struct MetadataPart()
 {
-    [JsonPropertyName("utc-millis")]
     public long UtcMillis { get; init; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-    [JsonPropertyName("source")]
     public string Source { get; init; } = ResourceRules.SourceName;
-    [JsonPropertyName("api-version")]
     public string Version { get; init; } = ResourceRules.SourceVersion;    
 }
 
