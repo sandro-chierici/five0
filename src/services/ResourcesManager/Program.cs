@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using ResourcesManager.Business.Application;
+using ResourcesManager.Business.Application.ExternalServices;
 using ResourcesManager.Infrastructure.DB;
+using Services.ResourcesManager.Infrastructure.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +32,10 @@ builder.Services.AddSwaggerGen();
 // App services
 builder.Services.AddSingleton<IDatabaseQuery, DbServiceQuery>();
 builder.Services.AddSingleton<IDatabaseCommand, DbServiceCommand>();
+
+// External Services
+builder.Services.AddTimeServiceClient();
+builder.Services.AddSingleton<ITimeService, TimeServiceClient>();
 
 var app = builder.Build();
 

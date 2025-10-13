@@ -1,12 +1,11 @@
-﻿using System.Text.Json.Serialization;
-using ResourcesManager.Business.Application;
+﻿using ResourcesManager.Business.Application;
 
 namespace ResourcesManager.Adapters.Api.V1.ApiInterfaces;
 
 
 public record struct MetadataPart()
 {
-    public long UtcMillis { get; init; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    public long ProcessTimestamp { get; init; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     public string Source { get; init; } = ResourceRules.SourceName;
     public string Version { get; init; } = ResourceRules.SourceVersion;    
 }
