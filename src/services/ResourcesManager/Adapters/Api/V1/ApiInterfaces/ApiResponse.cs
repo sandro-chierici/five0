@@ -5,7 +5,6 @@ namespace ResourcesManager.Adapters.Api.V1.ApiInterfaces;
 
 public record struct MetadataPart()
 {
-    public long ProcessTimestamp { get; init; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     public string Source { get; init; } = ResourceRules.SourceName;
     public string Version { get; init; } = ResourceRules.SourceVersion;    
 }
@@ -29,7 +28,7 @@ public class ApiResponse
     /// </summary>
     public ErrorPart? Error { get; init; }
 
-    public static ApiResponse Ok() => new();
+    public static ApiResponse Empty() => new();
 
     public static ApiResponse DataResponse(object data) => new()
     {

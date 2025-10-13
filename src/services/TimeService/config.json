@@ -1,4 +1,4 @@
 {
   "port": 6080,
-  "host": "localhost"
+  "host": "0.0.0.0"
 }
