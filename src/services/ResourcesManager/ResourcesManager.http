@@ -14,6 +14,9 @@ Content-Type: application/json
 }
 
 ###
-GET {{ResourceManager_HostAddress}}/api/v1/actions/createdb
+GET {{ResourceManager_HostAddress}}/api/v1/_commands/createdb
 Accept: application/json
 
+###
+GET {{ResourceManager_HostAddress}}/healtz
+Accept: application/json

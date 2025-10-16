@@ -7,7 +7,9 @@ namespace ResourcesManager.Business.Application;
 public interface IDatabaseQuery
 {
     ValueTask<QueryResponse<List<ResourceView>>> GetResourcesAsync(
-        Expression<Func<Resource, bool>> filter, int limit = ResourceRules.ResourcesQueryLimit);
+        Expression<Func<Resource, bool>> filter,
+        Expression<Func<ResourceResourceGroup, bool>>? filterGroup = null,
+        int limit = ResourceRules.ResourcesQueryLimit);
 
-    ValueTask<QueryResponse<List<Resource>>> GetResourcesAsync(string sql);
+    ValueTask<QueryResponse<List<object>>> GetResourcesSQLAsync(string sql);
 }

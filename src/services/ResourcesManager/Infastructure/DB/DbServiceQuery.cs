@@ -12,6 +12,7 @@ public class DbServiceQuery(
 {
     public async ValueTask<QueryResponse<List<ResourceView>>> GetResourcesAsync(
         Expression<Func<Resource, bool>> filter,
+        Expression<Func<ResourceResourceGroup, bool>>? filterGroup = null,
         int limit = ResourceRules.ResourcesQueryLimit)
     {
         try
@@ -20,14 +21,30 @@ public class DbServiceQuery(
             using var tenantContext = await tenantContextFactory.CreateDbContextAsync();
             var tm = System.Diagnostics.Stopwatch.StartNew();
 
-            var resources = await resourceContext.Resources
-                .Where(filter)
+            // first create query 
+            var query = resourceContext.Resources
+                .Where(filter);
+
+            // then add filter on resourcegroups
+            if (filterGroup != null)
+            {
+                // search all resourceid with that groups
+                var filteredIds = await resourceContext.ResourceResourceGroups
+                .Where(filterGroup)
+                .Select(rrg => rrg.ResourceId)
+                .ToArrayAsync();
+
+                query.Where(r => filteredIds.Contains(r.Id));
+            }   
+
+            // exec query
+            var resourceList = await query
                 .Take(limit > 0 ? limit : ResourceRules.ResourcesQueryLimit)
                 .AsNoTracking()
                 .ToListAsync();
 
             // read tenants 
-            var tenantIds = resources.Select(r => r.TenantId)
+            var tenantIds = resourceList.Select(r => r.TenantId)
                 .Where(tid => tid.HasValue)
                 .Distinct()
                 .ToList();
@@ -38,7 +55,7 @@ public class DbServiceQuery(
                 new Dictionary<long, Business.DataModel.Tenants.Tenant>();
 
             // read ResourceTypes
-            var resourceTypeIds = resources.Select(r => r.ResourceTypeId)
+            var resourceTypeIds = resourceList.Select(r => r.ResourceTypeId)
                 .Where(rtId => rtId.HasValue)
                 .Distinct()
                 .ToList();
@@ -46,12 +63,11 @@ public class DbServiceQuery(
                 await resourceContext.ResourceTypes.Where(rt => resourceTypeIds.Contains(rt.Id))
                 .AsNoTracking()
                 .ToDictionaryAsync(rt => rt.Id, resourceType => resourceType) :
-                new Dictionary<long, Business.DataModel.Resources.ResourceType>();
+                new Dictionary<long, ResourceType>();
 
-            // read groups
 
             // create resourceviews
-            var data = resources.Select(r => new ResourceView
+            var data = resourceList.Select(r => new ResourceView
             {
                 Resource = r,
                 Tenant = r.TenantId.HasValue && tenantsDict.ContainsKey(r.TenantId.Value) ?
@@ -78,7 +94,7 @@ public class DbServiceQuery(
         }
     }
 
-    public async ValueTask<QueryResponse<List<Resource>>> GetResourcesAsync(string sql)
+    public async ValueTask<QueryResponse<List<object>>> GetResourcesSQLAsync(string sql)
     {
         try
         {
@@ -86,7 +102,7 @@ public class DbServiceQuery(
 
             var tm = System.Diagnostics.Stopwatch.StartNew();
 
-            var data = await ctx.Database.SqlQueryRaw<Resource>(sql)
+            var data = await ctx.Database.SqlQueryRaw<object>(sql)
                 .ToListAsync();
 
             tm.Stop();

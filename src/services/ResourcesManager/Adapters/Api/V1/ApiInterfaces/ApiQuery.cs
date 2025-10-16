@@ -9,11 +9,17 @@ public class ApiQuery()
     /// Search with a list of ids
     /// </summary>
     public long[]? Id { get; set; }
-
+    /// <summary>
+    /// Name startsWith
+    /// </summary>
     public string? StartsWith { get; set; }
-
+    /// <summary>
+    /// Resource has typeId
+    /// </summary>
     public long[]? ResourceTypeId { get; set; }
-
+    /// <summary>
+    /// resource is in the group
+    /// </summary>
     public long[]? ResourceGroupId { get; set; }
 
 }

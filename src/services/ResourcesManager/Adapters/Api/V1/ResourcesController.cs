@@ -63,6 +63,11 @@ public class ResourcesController(IDatabaseQuery dbQuery) : ControllerBase
                     r.Name != null &&
                     r.TenantId == tenantId &&
                     r.Name.ToLower().StartsWith(q.StartsWith.ToLower())),
+                // get by typeid
+                { ResourceTypeId: not null } and { ResourceTypeId.Length: > 0 } => await dbQuery.GetResourcesAsync(r =>
+                    r.TenantId == tenantId &&
+                    r.ResourceTypeId.HasValue &&
+                    q.ResourceTypeId.Contains(r.ResourceTypeId.Value)),
 
                 _ => new QueryResponse<List<ResourceView>>()
             };

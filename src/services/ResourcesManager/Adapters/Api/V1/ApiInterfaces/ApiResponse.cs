@@ -2,7 +2,9 @@
 
 namespace ResourcesManager.Adapters.Api.V1.ApiInterfaces;
 
-
+/// <summary>
+/// Response metadata
+/// </summary>
 public class MetadataPart()
 {
     public DateTimeOffset ServiceTimeUTC { get; } = DateTimeOffset.UtcNow;
@@ -14,6 +16,9 @@ public record DataPart(object Payload);
 
 public record ErrorPart(string Message, int? Code = null);
 
+/// <summary>
+/// Models for response 
+/// </summary>
 public class ApiResponse
 {
     /// <summary>
@@ -23,13 +28,13 @@ public class ApiResponse
     /// <summary>
     /// Payload
     /// </summary>
-    public DataPart? Data { get; init; } 
+    public DataPart? Data { get; init; }
     /// <summary>
     /// Error
     /// </summary>
     public ErrorPart? Error { get; init; }
 
-    public ApiResponse() {}
+    public ApiResponse() { }
 
     public static ApiResponse Empty(string? originRequestId = null) => new();
 
@@ -41,9 +46,9 @@ public class ApiResponse
     public static ApiResponse ErrorResponse(
         string errorMsg,
         int code = (int)ErrorCodes.GenericError) => new()
-    {
-        Error = new(errorMsg, code)
-    };
+        {
+            Error = new(errorMsg, code)
+        };
 }
 
 
