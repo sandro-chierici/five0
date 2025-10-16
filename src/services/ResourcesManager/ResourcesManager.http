@@ -1,8 +1,13 @@
-@ResourceManager_HostAddress = http://localhost:5223
+@ResourceManager_HostAddress = http://localhost:5000
 
-GET {{ResourceManager_HostAddress}}/resources
+GET {{ResourceManager_HostAddress}}/api/v1/resources/1
+Accept: application/json
+
+
+POST {{ResourceManager_HostAddress}}/api/v1/resources/tenant/1/search
 Accept: application/json
 
 ###
-GET {{ResourceManager_HostAddress}}/resources/actions/createdb
+GET {{ResourceManager_HostAddress}}/api/v1/actions/createdb
 Accept: application/json
+

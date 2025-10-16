@@ -3,15 +3,16 @@
 namespace ResourcesManager.Adapters.Api.V1.ApiInterfaces;
 
 
-public record struct MetadataPart()
+public class MetadataPart()
 {
-    public string Source { get; init; } = ResourceRules.SourceName;
-    public string Version { get; init; } = ResourceRules.SourceVersion;    
+    public DateTimeOffset ServiceTimeUTC { get; } = DateTimeOffset.UtcNow;
+    public string Source { get; } = ResourceRules.SourceName;
+    public string Version { get; } = ResourceRules.SourceVersion;   
 }
 
 public record DataPart(object Payload);
 
-public record ErrorPart(string Message, string? Description, int? Code = null);
+public record ErrorPart(string Message, int? Code = null);
 
 public class ApiResponse
 {
@@ -28,19 +29,20 @@ public class ApiResponse
     /// </summary>
     public ErrorPart? Error { get; init; }
 
-    public static ApiResponse Empty() => new();
+    public ApiResponse() {}
 
-    public static ApiResponse DataResponse(object data) => new()
+    public static ApiResponse Empty(string? originRequestId = null) => new();
+
+    public static ApiResponse DataResponse(object data, string? originRequestId = null) => new()
     {
         Data = new(data)
     };
 
     public static ApiResponse ErrorResponse(
-        string error,
-        string description = "",
+        string errorMsg,
         int code = (int)ErrorCodes.GenericError) => new()
     {
-        Error = new(error, description, code)
+        Error = new(errorMsg, code)
     };
 }
 

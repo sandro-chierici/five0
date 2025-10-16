@@ -29,6 +29,8 @@ builder.Services.AddDbContextFactory<TenantContext>(
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHealthChecks();
+
 // App services
 builder.Services.AddSingleton<IDatabaseQuery, DbServiceQuery>();
 builder.Services.AddSingleton<IDatabaseCommand, DbServiceCommand>();
@@ -51,5 +53,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("/healtz");
 
 app.Run();

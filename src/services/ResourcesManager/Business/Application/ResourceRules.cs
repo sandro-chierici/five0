@@ -16,7 +16,16 @@ public static class ResourceRules
     public const string DefaultResourceTypeName = "default";
     public const string DefaultResourceStatusName = "new";
 
-    public const string SourceName = "five0 Resources";
+    public const string SourceName = "ResourcesManager";
     public const string SourceVersion = "1.0";
-
+    /// <summary>
+    /// TraceId http headers
+    /// </summary>
+    public const string TraceIdHeader = "X-five0-traceid";
+    /// <summary>
+    /// Compose a New request unique id
+    /// SourceName + Guid
+    /// </summary>
+    /// <returns></returns>
+    public static string GetNewTraceId() => $"{SourceName}:{Guid.NewGuid()}";
 }

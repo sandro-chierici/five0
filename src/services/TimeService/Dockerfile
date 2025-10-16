@@ -19,9 +19,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o timeservice .
 # Final stage
 FROM alpine:latest
 
-# Set the environment variable for the timezone
-ENV TZ=Europe/Rome
-
 # Install ca-certificates for HTTPS requests if needed
 # RUN apk --no-cache add ca-certificates
 
