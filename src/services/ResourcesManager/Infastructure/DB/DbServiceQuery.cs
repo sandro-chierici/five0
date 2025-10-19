@@ -1,8 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using ResourcesManager.Business.Application;
 using ResourcesManager.Business.DataModel.Resources;
+using ResourcesManager.Business.DataModel.Tenants;
 using ResourcesManager.Business.DataViews;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 
 namespace ResourcesManager.Infrastructure.DB;
 
@@ -12,68 +15,65 @@ public class DbServiceQuery(
 {
     public async ValueTask<QueryResponse<List<ResourceView>>> GetResourcesAsync(
         Expression<Func<Resource, bool>> filter,
-        Expression<Func<ResourceResourceGroup, bool>>? filterGroup = null,
         int limit = ResourceRules.ResourcesQueryLimit)
     {
         try
         {
-            using var resourceContext = await resourceContextFactory.CreateDbContextAsync();
-            using var tenantContext = await tenantContextFactory.CreateDbContextAsync();
+            using var resourceCtx = await resourceContextFactory.CreateDbContextAsync();
+            using var tenantCtx = await tenantContextFactory.CreateDbContextAsync();
             var tm = System.Diagnostics.Stopwatch.StartNew();
 
-            // first create query 
-            var query = resourceContext.Resources
-                .Where(filter);
+            // Get resources with resource types in one query
+            var resources = await (from resource in resourceCtx.Resources
+                                   .Where(filter)
+                                   .Take(limit)
+                                   .AsNoTracking()
+                                   join typ in resourceCtx.ResourceTypes
+                                   on new { resource.TenantId, Id = resource.ResourceTypeId ?? 0 }
+                                   equals new { typ.TenantId, typ.Id } into rt
+                                   from resourceType in rt.DefaultIfEmpty()
+                                   select new
+                                   {
+                                       Resource = resource,
+                                       ResourceType = resourceType
+                                   }).ToListAsync();
 
-            // then add filter on resourcegroups
-            if (filterGroup != null)
-            {
-                // search all resourceid with that groups
-                var filteredIds = await resourceContext.ResourceResourceGroups
-                .Where(filterGroup)
-                .Select(rrg => rrg.ResourceId)
-                .ToArrayAsync();
-
-                query.Where(r => filteredIds.Contains(r.Id));
-            }   
-
-            // exec query
-            var resourceList = await query
-                .Take(limit > 0 ? limit : ResourceRules.ResourcesQueryLimit)
-                .AsNoTracking()
-                .ToListAsync();
-
-            // read tenants 
-            var tenantIds = resourceList.Select(r => r.TenantId)
-                .Where(tid => tid.HasValue)
+            // Get tenant IDs
+            var tenantIds = resources
+                .Where(r => r.Resource.TenantId != null)
+                .Select(r => r.Resource.TenantId)
                 .Distinct()
                 .ToList();
-            var tenantsDict = tenantIds.Any() ?
-                await tenantContext.Tenants.Where(t => tenantIds.Contains(t.Id))
+
+            // Get all tenants in separate query
+            var tenants = await tenantCtx.Tenants
+                .Where(t => tenantIds.Contains(t.Id))
                 .AsNoTracking()
-                .ToDictionaryAsync(t => t.Id, tenant => tenant) :
-                new Dictionary<long, Business.DataModel.Tenants.Tenant>();
+                .ToDictionaryAsync(t => t.Id, t => t);
 
-            // read ResourceTypes
-            var resourceTypeIds = resourceList.Select(r => r.ResourceTypeId)
-                .Where(rtId => rtId.HasValue)
-                .Distinct()
-                .ToList();
-            var resourceTypesDict = resourceTypeIds.Any() ?
-                await resourceContext.ResourceTypes.Where(rt => resourceTypeIds.Contains(rt.Id))
-                .AsNoTracking()
-                .ToDictionaryAsync(rt => rt.Id, resourceType => resourceType) :
-                new Dictionary<long, ResourceType>();
+            // get all groups in a separate query
+            var grps = (from r in resources
+                        join rrg in resourceCtx.ResourceResourceGroups
+                        on new { r.Resource.Id, r.Resource.TenantId } equals new { Id = rrg.ResourceId, rrg.TenantId }
+                        join rg in resourceCtx.ResourceGroups
+                        on new { rrg.ResourceGroupId, rrg.TenantId } equals new { ResourceGroupId = rg.Id, rg.TenantId }
+                        select new
+                        {
+                            Resource = r,
+                            Group = rg
+                        }).ToList();
 
-
-            // create resourceviews
-            var data = resourceList.Select(r => new ResourceView
+            // Combine results
+            var data = resources.Select(r => new ResourceView
             {
-                Resource = r,
-                Tenant = r.TenantId.HasValue && tenantsDict.ContainsKey(r.TenantId.Value) ?
-                    tenantsDict[r.TenantId.Value] : null,
-                ResourceType = r.ResourceTypeId.HasValue && resourceTypesDict.ContainsKey(r.ResourceTypeId.Value) ?
-                    resourceTypesDict[r.ResourceTypeId.Value] : null,
+                Resource = r.Resource,
+                ResourceType = r.ResourceType,
+                Tenant = tenants
+                    .GetValueOrDefault(r.Resource.TenantId ?? 0),
+                ResourceGroups = grps
+                    .Where(g => g.Resource.Resource.Id == r.Resource.Id)
+                    .Select(r => r.Group)
+                    .ToList()
             }).ToList();
 
             tm.Stop();
@@ -83,7 +83,7 @@ public class DbServiceQuery(
                 Results = data,
                 Metadata =
                 {
-                    RowsRead = data.Count,
+                    RowsRead = data.Count(),
                     QueryExecutionMillis = tm.ElapsedMilliseconds
                 }
             };
@@ -93,6 +93,7 @@ public class DbServiceQuery(
             return new() { QueryError = new Error(ex.Message, ErrorCodes.GenericError) };
         }
     }
+
 
     public async ValueTask<QueryResponse<List<object>>> GetResourcesSQLAsync(string sql)
     {

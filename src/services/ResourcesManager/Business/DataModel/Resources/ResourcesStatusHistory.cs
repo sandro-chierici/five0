@@ -7,6 +7,6 @@ public class ResourceStatusHistory
     public long? TenantId { get; set; }
     public long ResourceId { get; set; }
     public long ResourceStatusId { get; set; }
-    public DateTimeOffset UtcTime { get; set; }
+    public DateTimeOffset? UtcTime { get; set; }
     public string? Notes { get; set; }
 }

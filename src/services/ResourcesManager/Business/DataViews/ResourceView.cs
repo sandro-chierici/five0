@@ -12,5 +12,5 @@ public class ResourceView
     public Tenant? Tenant { get; init; }
     public ResourceType? ResourceType { get; init; }
     public ResourceStatus? CurrentStatus { get; init; }
-    public IEnumerable<ResourceGroup> Groups { get; init; } = new List<ResourceGroup>();
+    public List<ResourceGroup> ResourceGroups { get; init; } = [];
 }

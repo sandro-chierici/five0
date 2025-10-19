@@ -10,4 +10,5 @@ public class Resource
     public string? Name { get; set; }
     public string? Description { get; set; }
     public long? ResourceTypeId { get; set; }
+
 }
