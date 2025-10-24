@@ -1,16 +1,25 @@
 @ResourceManager_HostAddress = http://localhost:5000
 
 ###
-GET {{ResourceManager_HostAddress}}/api/v1/resources/1
+GET {{ResourceManager_HostAddress}}/api/v1/tenant/1/resources/1
 Accept: application/json
 
 ###
-POST {{ResourceManager_HostAddress}}/api/v1/resources/tenant/1/search
+POST {{ResourceManager_HostAddress}}/api/v1/tenant/1/resources/_search
 Accept: application/json
 Content-Type: application/json
 
 {
-    "startsWith": "reso"
+    "startsWith": "res"
+}
+
+###
+POST {{ResourceManager_HostAddress}}/api/v1/tenant/1/resources/_search
+Accept: application/json
+Content-Type: application/json
+
+{
+    "resourceGroupId": [1,2,3]
 }
 
 ###

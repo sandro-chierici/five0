@@ -5,7 +5,7 @@ using ResourcesManager.Business.DataViews;
 
 namespace ResourcesManager.Adapters.Api.V1;
 
-[Route("api/v1/resources")]
+[Route("api/v1/tenant/{tenantId:long}/resources")]
 [ApiController]
 public class ResourcesController(IDatabaseQuery dbQuery) : ControllerBase
 {
@@ -15,9 +15,9 @@ public class ResourcesController(IDatabaseQuery dbQuery) : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("{id:long}")]
-    public async ValueTask<ActionResult<ApiResponse>> GetById(long id)
+    public async ValueTask<ActionResult<ApiResponse>> GetById(long id, long tenantId)
     {
-        var resp = await dbQuery.GetResourcesAsync(res => res.Id == id);
+        var resp = await dbQuery.GetResourcesAsync(res => res.Id == id && res.TenantId == tenantId);
 
         if (resp.IsError)
             return BadRequest(ApiResponse.ErrorResponse(resp.QueryError?.errorMessage ?? "Request Error"));
@@ -26,30 +26,10 @@ public class ResourcesController(IDatabaseQuery dbQuery) : ControllerBase
     }
 
     /// <summary>
-    /// For testing purpouse
-    /// </summary>
-    /// <param name="tenantId"></param>
-    /// <param name="name"></param>
-    /// <returns></returns>
-    // [HttpGet("tenant/{tenantId:long}/name/{name?}")]
-    // public async ValueTask<ActionResult<ApiResponse>> GetByNameAndTenant(long tenantId, string? name)
-    // {
-    //     var resp = await dbQuery.GetResourcesAsync(res => res.TenantId == tenantId &&
-    //         (name == null || res.Name != null && res.Name.ToLower().StartsWith(name.ToLower())));
-
-    //     if (resp.IsError)
-    //     {
-    //         return BadRequest(ApiResponse.ErrorResponse(resp.QueryError?.errorMessage ?? "Request error"));
-    //     }
-
-    //     return Ok(ApiResponse.DataResponse(resp));
-    // }
-
-    /// <summary>
     /// Search by query
     /// </summary>
     /// <param name="value"></param>
-    [HttpPost("tenant/{tenantId:long}/search")]
+    [HttpPost("_search")]
     public async ValueTask<ActionResult<ApiResponse>> Post([FromBody] ApiQuery query, long tenantId)
     {
         // inner func to evalueate query
@@ -57,17 +37,31 @@ public class ResourcesController(IDatabaseQuery dbQuery) : ControllerBase
             q switch
             {
                 // get a sequence of ids
-                { Id: not null } and { Id.Length: > 0 } => await dbQuery.GetResourcesAsync(r => q.Id.Contains(r.Id) && r.TenantId == tenantId),
+                { Id: not null } and { Id.Length: > 0 } =>
+                await dbQuery.GetResourcesAsync(
+                    resource => q.Id.Contains(resource.Id) && resource.TenantId == tenantId),
+
                 // get by name
-                { StartsWith: not null } and { StartsWith.Length: > 0 } => await dbQuery.GetResourcesAsync(r =>
-                    r.Name != null &&
-                    r.TenantId == tenantId &&
-                    r.Name.ToLower().StartsWith(q.StartsWith.ToLower())),
+                { StartsWith: not null } and { StartsWith.Length: > 0 } =>
+                await dbQuery.GetResourcesAsync(
+                    resource =>
+                    resource.Name != null &&
+                    resource.TenantId == tenantId &&
+                    resource.Name.ToLower().StartsWith(q.StartsWith.ToLower())),
+
                 // get by typeid
-                { ResourceTypeId: not null } and { ResourceTypeId.Length: > 0 } => await dbQuery.GetResourcesAsync(r =>
-                    r.TenantId == tenantId &&
-                    r.ResourceTypeId.HasValue &&
-                    q.ResourceTypeId.Contains(r.ResourceTypeId.Value)),
+                { ResourceTypeId: not null } and { ResourceTypeId.Length: > 0 } =>
+                await dbQuery.GetResourcesAsync(
+                    resource =>
+                    resource.TenantId == tenantId &&
+                    resource.ResourceTypeId.HasValue &&
+                    q.ResourceTypeId.Contains(resource.ResourceTypeId.Value)),
+
+                // get by groupId
+                { ResourceGroupId: not null } and { ResourceGroupId.Length: > 0 } =>
+                await dbQuery.GetResourcesByGroupAsync(
+                    group => group.TenantId == tenantId &&
+                    q.ResourceGroupId.Contains(group.Id)),
 
                 _ => new QueryResponse<List<ResourceView>>()
             };

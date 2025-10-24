@@ -8,9 +8,9 @@ namespace ResourcesManager.Business.DataViews;
 /// </summary>
 public class ResourceView
 {
-    public required Resource Resource { get; init; } 
-    public Tenant? Tenant { get; init; }
-    public ResourceType? ResourceType { get; init; }
-    public ResourceStatus? CurrentStatus { get; init; }
-    public List<ResourceGroup> ResourceGroups { get; init; } = [];
+    public required Resource Resource { get; set; } 
+    public Tenant? Tenant { get; set; }
+    public ResourceType? ResourceType { get; set; }
+    public ResourceStatus? CurrentStatus { get; set; }
+    public List<ResourceGroup> ResourceGroups { get; set; } = [];
 }

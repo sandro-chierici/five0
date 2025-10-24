@@ -21,5 +21,9 @@ public class ApiQuery()
     /// resource is in the group
     /// </summary>
     public long[]? ResourceGroupId { get; set; }
+    /// <summary>
+    /// by status
+    /// </summary>
+    public long[]? ResourceStatusId { get; set; }
 
 }
