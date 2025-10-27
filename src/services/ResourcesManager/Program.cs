@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ResourcesManager.Business.Application;
-using ResourcesManager.Business.Application.ExternalServices;
+using ResourcesManager.Business.Application.Configuration;
 using ResourcesManager.Infrastructure.DB;
 using Services.ResourcesManager.Infrastructure.Http;
 
@@ -24,7 +24,9 @@ builder.Services.AddDbContextFactory<TenantContext>(
         optionsBuilder.UseNpgsql(
             builder.Configuration.GetConnectionString("TenantsDb") 
             ?? @"Host=localhost;Username=postgres;Password=five0_rm;Database=five0_tenants");
-    });    
+    });
+
+builder.Services.Configure<Five0Config>(builder.Configuration.GetSection("Five0"));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -36,8 +38,9 @@ builder.Services.AddSingleton<IDatabaseQuery, DbServiceQuery>();
 builder.Services.AddSingleton<IDatabaseCommand, DbServiceCommand>();
 
 // External Services
-builder.Services.AddTimeServiceClient();
-builder.Services.AddSingleton<ITimeService, TimeServiceClient>();
+builder.Services.AddTimeServiceClient(builder.Configuration);
+builder.Services.AddEventServiceClient(builder.Configuration);
+
 
 var app = builder.Build();
 
