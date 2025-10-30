@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ResourcesManager.Adapters.Api.V1.ApiInterfaces;
 using ResourcesManager.Business.Application;
+using ResourcesManager.Business.Application.ExternalServices;
 using ResourcesManager.Business.DataModel.Resources;
 
 namespace ResourcesManager.Infrastructure.DB;
@@ -31,11 +32,6 @@ public class DbServiceCommand(
         }
     }
 
-    public async ValueTask<QueryResponse<int>> InsertAsync(Resource resource)
-    {
-        return await Task.Run(() => new QueryResponse<int> { Results = 0 });
-    }
-
     /// <summary>
     /// Create a new resource in the database.
     /// </summary>
@@ -47,7 +43,7 @@ public class DbServiceCommand(
         {
             using var rctx = await resourceContextFactory.CreateDbContextAsync();
 
-            // getting exact time fof transaction
+            // getting exact time for transaction
             var localSystemNow = DateTimeOffset.UtcNow;
 
             // resource creation
@@ -56,9 +52,12 @@ public class DbServiceCommand(
                 Name = request.Name,
                 TenantId = request.TenantId!.Value,
                 Description = request.Description,
-                ResourceTypeId = request.ResourceTypeId
+                ResourceTypeId = request.ResourceTypeId,
+                UtcCreated = localSystemNow
             };
             await rctx.Resources.AddAsync(resource);
+
+            await rctx.SaveChangesAsync();            
 
             // if resource group is provided, check if it exists and belongs to the tenant
             if (request.ResourceGroupId.HasValue)
@@ -79,7 +78,7 @@ public class DbServiceCommand(
                     ResourceGroupId = group.Id,
                     ResourceId = resource.Id,
                     TenantId = request.TenantId.Value,
-                    UtcCreatedDate = localSystemNow
+                    UtcCreated = localSystemNow
                 });
             }
 
@@ -88,9 +87,9 @@ public class DbServiceCommand(
             {
                 ResourceId = resource.Id,
                 ResourceStatusId = 1,
-                UtcTime = localSystemNow,
                 TenantId = request.TenantId.Value,
-                Notes = "Initial status upon creation"
+                Notes = "Initial status upon creation",
+                UtcCreated = localSystemNow
             };
             await rctx.ResourceStatusHistories.AddAsync(initialStatus);
 

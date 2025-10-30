@@ -5,7 +5,6 @@ namespace ResourcesManager.Business.Application;
 
 public interface IDatabaseCommand
 {
-    ValueTask<QueryResponse<int>> InsertAsync(Resource resource);
     ValueTask<QueryResponse<string?>> EnsureDBCreated();
     ValueTask<QueryResponse<long>> CreateResourceAsync(CreateResourceRequest request);
 }

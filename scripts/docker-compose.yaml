@@ -49,6 +49,14 @@ services:
     networks:
       - five0_net
 
+  timeservice:
+    image: timeservice
+    restart: always
+    ports:
+      - 6080:6080
+    networks:
+      - five0_net      
+
   # rabbitmq:
   #   image: rabbitmq:3.13-management-alpine
   #   configs:

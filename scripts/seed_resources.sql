@@ -1,6 +1,6 @@
 -- SQL script for Postgres DB to seed 10 resources for testing, all related to tenant with id 1
 
-
+INSERT into public."TenantsTypes" ("Id", "Code") VALUES (1, 'tenant-type-default');  
 INSERT into public."Tenants" ("Id", "Code", "TenantTypeId") VALUES (1, 'tenant-default', 1);  
 
 INSERT into public."ResourceTypes" ("Id", "TenantId", "Code") VALUES (1, 1, 'Test Resource Type 1');    

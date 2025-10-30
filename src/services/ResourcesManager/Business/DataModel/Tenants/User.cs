@@ -11,4 +11,5 @@ public class User
     public string? Description { get; set; } 
     public string? Email { get; set; }
     public string? Phone { get; set; }
+    public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;
 }

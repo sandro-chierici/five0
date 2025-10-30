@@ -6,5 +6,5 @@ public class ResourceResourceGroup
     public long TenantId { get; set; }    
     public long ResourceId { get; set; }
     public long ResourceGroupId { get; set; }
-    public DateTimeOffset? UtcCreatedDate { get; set; }
+    public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;
 }

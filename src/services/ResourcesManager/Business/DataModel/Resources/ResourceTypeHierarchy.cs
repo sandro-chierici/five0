@@ -9,5 +9,5 @@ public class ResourceTypeHierarchy
     public long TenantId { get; set; }
     public long ResourceTypeParentId { get; set; }
     public long ResourceTypeChildId { get; set; }
-
+    public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;
 }

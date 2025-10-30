@@ -10,16 +10,20 @@ Accept: application/json
 Content-Type: application/json
 
 {
-    "startsWith": "res"
+    "resourceTypeId": [1]
 }
 
 ###
-POST {{ResourceManager_HostAddress}}/api/v1/tenant/1/resources/_search
+POST {{ResourceManager_HostAddress}}/api/v1/tenant/1/resources
 Accept: application/json
 Content-Type: application/json
 
 {
-    "resourceGroupId": [1,2,3]
+    "name": "created-12",
+    "tenantId": 1,
+    "description": "test-case",
+    "resourceTypeId": 1,
+    "resourceGroupId": 1
 }
 
 ###

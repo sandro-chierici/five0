@@ -6,4 +6,5 @@ public class RoleGroup
     public long? TenantId { get; set; }    
     public long RoleId { get; set; }
     public long UserGroupId { get; set; }
+    public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;
 }

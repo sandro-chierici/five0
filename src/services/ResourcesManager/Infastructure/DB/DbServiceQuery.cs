@@ -77,7 +77,7 @@ public class DbServiceQuery(
                        on new { r.Resource.Id, r.Resource.TenantId } equals new { Id = rsh.ResourceId, rsh.TenantId }
                        join rs in resourceCtx.ResourceStatuses
                        on new { rsh.TenantId, Id = rsh.ResourceStatusId } equals new { rs.TenantId, rs.Id }
-                       orderby rsh.UtcTime descending
+                       orderby rsh.UtcCreated descending
                        select new
                        {
                            ResourceId = r.Resource.Id,
@@ -182,7 +182,7 @@ public class DbServiceQuery(
                        on new { r.Id, r.TenantId } equals new { Id = rsh.ResourceId, rsh.TenantId }
                        join rs in resourceCtx.ResourceStatuses
                        on new { rsh.TenantId, Id = rsh.ResourceStatusId } equals new { rs.TenantId, rs.Id }
-                       orderby rsh.UtcTime descending
+                       orderby rsh.UtcCreated descending
                        select new
                        {
                            ResourceId = r.Id,

@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using ResourcesManager.Business.Application;
 using ResourcesManager.Business.Application.Configuration;
+using ResourcesManager.Business.Application.ExternalServices;
 using ResourcesManager.Infrastructure.DB;
-using Services.ResourcesManager.Infrastructure.Http;
+using Services.ResourcesManager.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,8 @@ builder.Services.AddSingleton<IDatabaseCommand, DbServiceCommand>();
 
 // External Services
 builder.Services.AddTimeServiceClient(builder.Configuration);
+builder.Services.AddSingleton<ITimeService, TimeServiceClient>();
+
 builder.Services.AddEventServiceClient(builder.Configuration);
 
 

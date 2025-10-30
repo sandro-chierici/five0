@@ -1,11 +1,11 @@
 using ResourcesManager.Business.Application.ExternalServices;
 
-namespace Services.ResourcesManager.Infrastructure.Http;
+namespace Services.ResourcesManager.Infrastructure.Services;
 
 /// <summary>
 /// Registering any http client
 /// </summary>
-public static class HttpClientsRegistration
+public static class ServicesClientsRegistration
 {
     public const string TIME_SERVICE = "TimeServiceClient";
     public const string EVENT_SERVICE = "EventServiceClient";
@@ -30,43 +30,43 @@ public static class HttpClientsRegistration
             client.BaseAddress = new Uri("http://localhost:6081");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
-        Console.WriteLine($"Configured EventService client at url {url}");        
+        Console.WriteLine($"Configured EventService client at url {url}");
     }
 }
 
 
-/// <summary>
-/// Time Service implementation using HttpClient.
-/// </summary>
-public class TimeServiceClient(IHttpClientFactory HttpClientFactory, ILogger Logger) : ITimeService
+public class TimeServiceClient(IHttpClientFactory Factory) : ITimeService
 {
     /// <summary>
-    /// Data returned from TimeService
+    /// Definizione risposta TimeService
     /// </summary>
-    private class TimeServiceResponse
-    {
-        public long UtcUnixTime { get; set; }
-    }
+    /// <param name="utcUnixTime"></param>
+    private record TimeServiceResponse(long? utcUnixTime);
 
+    /// <summary>
+    /// Restituisce sempre un valore 
+    /// In caso di irraggiungibilita' del servizio di sincronizzazione da il tempo locale
+    /// </summary>
+    /// <returns></returns>
     public async ValueTask<DateTimeOffset> GetCurrentTimeAsync()
     {
-        var _httpClient = HttpClientFactory.CreateClient(HttpClientsRegistration.TIME_SERVICE);
-
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<TimeServiceResponse>("api/v1/now");
-            if (response is null)
-            {
-                return DateTimeOffset.UtcNow;
-            }
+            var cl = Factory.CreateClient(ServicesClientsRegistration.TIME_SERVICE);
+            var resp = await cl.GetAsync("/api/v1/now");
+            resp.EnsureSuccessStatusCode();
 
-            return new DateTimeOffset(response.UtcUnixTime, TimeSpan.Zero);
+            var content = await resp.Content.ReadFromJsonAsync<TimeServiceResponse>();
+            if (content?.utcUnixTime == null)
+                throw new Exception("TimeService responded with empty content");
+
+            return DateTimeOffset.FromUnixTimeMilliseconds(content.utcUnixTime.Value);
         }
-        catch (Exception ex)
+        catch(Exception e)
         {
-            Logger.LogError("Error calling TimeService {error}", ex.Message);
+            Console.WriteLine($"Error retrieving Time from TimeService {e.Message}");
+            return DateTimeOffset.UtcNow;
         }
-
-        return DateTimeOffset.UtcNow;
     }
 }
+
