@@ -1,0 +1,5 @@
+
+### test timeservice
+###
+GET http://locahost:6080/api/v1/now
+Accept: application/json

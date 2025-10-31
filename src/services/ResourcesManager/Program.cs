@@ -7,6 +7,9 @@ using Services.ResourcesManager.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -40,7 +43,7 @@ builder.Services.AddSingleton<IDatabaseCommand, DbServiceCommand>();
 
 // External Services
 builder.Services.AddTimeServiceClient(builder.Configuration);
-builder.Services.AddSingleton<ITimeService, TimeServiceClient>();
+builder.Services.AddSingleton<ISyncService, SyncServiceClient>();
 
 builder.Services.AddEventServiceClient(builder.Configuration);
 
@@ -60,6 +63,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHealthChecks("/healtz");
+app.MapHealthChecks("/_healtz");
 
 app.Run();

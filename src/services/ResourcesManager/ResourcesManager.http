@@ -27,9 +27,14 @@ Content-Type: application/json
 }
 
 ###
-GET {{ResourceManager_HostAddress}}/api/v1/_commands/createdb
+GET {{ResourceManager_HostAddress}}/api/v1/commands/createdb
 Accept: application/json
 
 ###
-GET {{ResourceManager_HostAddress}}/healtz
+GET {{ResourceManager_HostAddress}}/api/probes/healtz
+Accept: application/json
+
+### test timeservice
+###
+GET http://locahost:6081/api/v1/now
 Accept: application/json

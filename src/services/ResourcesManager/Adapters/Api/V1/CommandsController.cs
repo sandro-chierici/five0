@@ -4,9 +4,9 @@ using ResourcesManager.Business.Application;
 
 namespace ResourcesManager.Adapters.Api.V1;
 
-[Route("api/v1/_commands")]
+[Route("api/v1/commands")]
 [ApiController]
-public class UtilsController(IDatabaseCommand dbCommand) : ControllerBase
+public class CommandsController(IDatabaseCommand dbCommand) : ControllerBase
 {
     [Route("createdb")]
     [HttpGet]

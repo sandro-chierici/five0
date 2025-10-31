@@ -7,19 +7,19 @@ namespace Services.ResourcesManager.Infrastructure.Services;
 /// </summary>
 public static class ServicesClientsRegistration
 {
-    public const string TIME_SERVICE = "TimeServiceClient";
+    public const string SYNC_SERVICE = "SyncServiceClient";
     public const string EVENT_SERVICE = "EventServiceClient";
 
     public static void AddTimeServiceClient(this IServiceCollection services, ConfigurationManager config)
     {
-        var url = config["Five0:TimeServiceUrl"] ?? "http://localhost:6080";
-        services.AddHttpClient(TIME_SERVICE, client =>
+        var url = config["Five0:SyncServiceUrl"] ?? "http://localhost:6080";
+        services.AddHttpClient(SYNC_SERVICE, client =>
         {
             client.BaseAddress = new Uri(url);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
 
-        Console.WriteLine($"Configured TimeService client at url {url}");
+        Console.WriteLine($"Configured SyncService client at url {url}");
     }
 
     public static void AddEventServiceClient(this IServiceCollection services, ConfigurationManager config)
@@ -35,37 +35,36 @@ public static class ServicesClientsRegistration
 }
 
 
-public class TimeServiceClient(IHttpClientFactory Factory) : ITimeService
+public class SyncServiceClient(IHttpClientFactory Factory) : ISyncService
 {
     /// <summary>
     /// Definizione risposta TimeService
     /// </summary>
     /// <param name="utcUnixTime"></param>
-    private record TimeServiceResponse(long? utcUnixTime);
+    private record SyncServiceResponse(long? utcUnixTime);
 
     /// <summary>
-    /// Restituisce sempre un valore 
-    /// In caso di irraggiungibilita' del servizio di sincronizzazione da il tempo locale
+    /// Restituisce utc unix nanosecondi since 1/1/70
     /// </summary>
     /// <returns></returns>
-    public async ValueTask<DateTimeOffset> GetCurrentTimeAsync()
+    public async ValueTask<OkOrError<long>> GetSyncTimeAsync()
     {
         try
         {
-            var cl = Factory.CreateClient(ServicesClientsRegistration.TIME_SERVICE);
+            var cl = Factory.CreateClient(ServicesClientsRegistration.SYNC_SERVICE);
             var resp = await cl.GetAsync("/api/v1/now");
             resp.EnsureSuccessStatusCode();
 
-            var content = await resp.Content.ReadFromJsonAsync<TimeServiceResponse>();
+            var content = await resp.Content.ReadFromJsonAsync<SyncServiceResponse>();
             if (content?.utcUnixTime == null)
                 throw new Exception("TimeService responded with empty content");
 
-            return DateTimeOffset.FromUnixTimeMilliseconds(content.utcUnixTime.Value);
+            return new OkOrError<long>(content.utcUnixTime.Value);
         }
         catch(Exception e)
         {
             Console.WriteLine($"Error retrieving Time from TimeService {e.Message}");
-            return DateTimeOffset.UtcNow;
+            return new OkOrError<long>($"Error retrieving Time from TimeService {e.Message}");
         }
     }
 }

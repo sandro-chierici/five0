@@ -3,9 +3,9 @@ namespace ResourcesManager.Business.Application.ExternalServices;
 /// <summary>
 /// Syncro service
 /// </summary>
-public interface ITimeService
+public interface ISyncService
 {
-    ValueTask<DateTimeOffset> GetCurrentTimeAsync();
+    ValueTask<OkOrError<long>> GetSyncTimeAsync();
 }
 
 /// <summary>
