@@ -31,7 +31,15 @@ GET {{ResourceManager_HostAddress}}/api/v1/commands/createdb
 Accept: application/json
 
 ###
-GET {{ResourceManager_HostAddress}}/api/probes/healtz
+GET {{ResourceManager_HostAddress}}/api/probes/ready
+Accept: application/json
+
+###
+GET {{ResourceManager_HostAddress}}/api/probes/live
+Accept: application/json
+
+###
+GET {{ResourceManager_HostAddress}}/api/probes/startup
 Accept: application/json
 
 ### test timeservice

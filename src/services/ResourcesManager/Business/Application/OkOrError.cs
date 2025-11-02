@@ -1,4 +1,4 @@
-
+namespace ResourcesManager.Business.Application;
 public class OkOrError<T>
 {
     public OkOrError(T value) => Value = value;

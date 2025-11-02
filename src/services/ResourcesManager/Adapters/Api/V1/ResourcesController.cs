@@ -2,7 +2,6 @@
 using ResourcesManager.Adapters.Api.V1.ApiInterfaces;
 using ResourcesManager.Business.Application;
 using ResourcesManager.Business.DataViews;
-using System.Data.Common;
 
 namespace ResourcesManager.Adapters.Api.V1;
 
@@ -113,7 +112,21 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
 
 
     [HttpDelete("{id:long}")]
-    public void DeleteOne(long id)
+    public async ValueTask<ActionResult<ApiResponse>> DeleteOne(long tenantId, long id)
     {
+        try
+        {
+            // Create the resource (assuming IDatabaseCommand interface exists)
+            var res = await dbCommand.DeleteResourceAsync(tenantId, id);
+
+            if (res.IsError)
+                return BadRequest(ApiResponse.ErrorResponse(res.QueryError?.errorMessage ?? "Failed to delete resource"));
+
+            return Ok(ApiResponse.Empty());
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse.ErrorResponse($"Internal server error: {ex.Message}"));
+        }
     }
 }

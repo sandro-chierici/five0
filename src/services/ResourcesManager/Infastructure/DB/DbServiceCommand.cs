@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ResourcesManager.Adapters.Api.V1.ApiInterfaces;
 using ResourcesManager.Business.Application;
-using ResourcesManager.Business.Application.ExternalServices;
 using ResourcesManager.Business.DataModel.Resources;
 
 namespace ResourcesManager.Infrastructure.DB;
 
 public class DbServiceCommand(
     IDbContextFactory<ResourceContext> resourceContextFactory,
-    IDbContextFactory<TenantContext> tenantContextFactory) : IDatabaseCommand
+    IDbContextFactory<TenantContext> tenantContextFactory,
+    ILogger<DbServiceCommand> logger) : IDatabaseCommand
 {
     /// <summary>
     /// Create Database
@@ -28,7 +28,44 @@ public class DbServiceCommand(
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Error ensuring database is created");
             return new() { QueryError = new Error(ex.Message, ErrorCodes.GenericError) };
+        }
+    }
+
+    /// <summary>
+    /// Create a new resource in the database.
+    /// </summary>
+    /// <param name="request">The request containing resource creation details.</param>
+    /// <returns>A QueryResponse containing the ID of the created resource.</returns>
+    public async ValueTask<QueryResponse<long>> CreateResourceGroupAsync(CreateResourceGroupRequest request)
+    {
+        try
+        {
+            using var rctx = await resourceContextFactory.CreateDbContextAsync();
+
+            // getting exact time for transaction
+            var localSystemNow = DateTimeOffset.UtcNow;
+            var group = new ResourceGroup
+            {
+                Name = request.Name,
+                Description = request.Description,
+                TenantId = request.TenantId!.Value,
+                UtcCreated = localSystemNow
+            };
+            await rctx.ResourceGroups.AddAsync(group);
+
+            await rctx.SaveChangesAsync();
+
+            var resp = new QueryResponse<long> { Results = group.Id };
+            resp.Metadata.RowsInserted = 1;
+
+            return resp;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error creating resource group");
+            return new QueryResponse<long> { QueryError = new Error(ex.Message, ErrorCodes.GenericError) };
         }
     }
 
@@ -99,7 +136,63 @@ public class DbServiceCommand(
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Error creating resource");
             return new QueryResponse<long> { QueryError = new Error(ex.Message, ErrorCodes.GenericError) };
+        }
+    }
+
+    /// <summary>
+    ///  delete`s a resource from the database.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public async ValueTask<QueryResponse<long>> DeleteResourceAsync(long tenantId, long id)
+    {
+        try
+        {
+            using var rctx = await resourceContextFactory.CreateDbContextAsync();
+
+            // getting exact time for transaction
+            var localSystemNow = DateTimeOffset.UtcNow;
+
+            var res = await rctx.Resources.FirstOrDefaultAsync(r => r.Id == id && r.TenantId == tenantId);
+            if (res == null)
+            {
+                return new QueryResponse<long>
+                {
+                    QueryError = new Error($"Resource not found tenantId {tenantId} id {id}.", ErrorCodes.ValuesNotFound)
+                };
+            }
+
+            // remove resource from groups
+            var resourceGroups = rctx.ResourceResourceGroups.Where(rrg => rrg.ResourceId == res.Id);
+            rctx.ResourceResourceGroups.RemoveRange(resourceGroups);
+
+            // add deletions to resource status history
+            await rctx.ResourceStatusHistories.AddAsync(new ResourceStatusHistory
+            {
+                ResourceId = res.Id,
+                ResourceStatusId = 3, // assuming 3 is the 'deleted' status
+                TenantId = res.TenantId,
+                // print resource delete values as JSON
+                Notes = System.Text.Json.JsonSerializer.Serialize(res),
+                UtcCreated = localSystemNow
+            });
+
+            // remove the resource
+            rctx.Resources.Remove(res);
+
+            await rctx.SaveChangesAsync();
+
+            var resp = new QueryResponse<long> { Results = res.Id };
+            resp.Metadata.RowsDeleted = 1;
+
+            return resp;    
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, $"Error deleting resource tenantId {tenantId} id {id}");
+            return new QueryResponse<long> { QueryError = new Error($"Error deleting resource tenantId {tenantId} id {id}", ErrorCodes.GenericError) };
         }
     }
 }

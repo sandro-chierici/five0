@@ -2,15 +2,13 @@
 using ResourcesManager.Business.Application;
 using ResourcesManager.Business.DataModel.Resources;
 using ResourcesManager.Business.DataViews;
-using System.Collections.Immutable;
 using System.Linq.Expressions;
 
 
 namespace ResourcesManager.Infrastructure.DB;
 
 public class DbServiceQuery(
-    IDbContextFactory<ResourceContext> resourceContextFactory,
-    IDbContextFactory<TenantContext> tenantContextFactory) : IDatabaseQuery
+    IDbContextFactory<ResourceContext> resourceContextFactory) : IDatabaseQuery
 {
     /// <summary>
     /// Resource List
@@ -25,11 +23,9 @@ public class DbServiceQuery(
         try
         {
             using var resourceCtx = await resourceContextFactory.CreateDbContextAsync();
-            using var tenantCtx = await tenantContextFactory.CreateDbContextAsync();
 
             // disable tracking we are read only
             resourceCtx.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-            tenantCtx.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
             var tm = System.Diagnostics.Stopwatch.StartNew();
 
@@ -46,17 +42,6 @@ public class DbServiceQuery(
                                   .Take(limit)
                                   .ToListAsync();
 
-
-            // Get tenant IDs
-            var tenantIds = resources
-                .Select(r => r.Resource.TenantId)
-                .Distinct()
-                .ToList();
-
-            // Get all tenants in separate query
-            var tenants = await tenantCtx.Tenants
-                .Where(t => tenantIds.Contains(t.Id))
-                .ToDictionaryAsync(t => t.Id, t => t);
 
             // get all groups in a separate query
             var grps = (from rv in resources
@@ -90,8 +75,6 @@ public class DbServiceQuery(
             {
                 Resource = r.Resource,
                 ResourceType = r.ResourceType,
-                Tenant = tenants
-                    .GetValueOrDefault(r.Resource.TenantId),
                 CurrentStatus = sts
                     .Where(s => s.ResourceId == r.Resource.Id && s.TenantId == r.Resource.TenantId)
                     .FirstOrDefault()?.Status,
@@ -134,11 +117,9 @@ public class DbServiceQuery(
         try
         {
             using var resourceCtx = await resourceContextFactory.CreateDbContextAsync();
-            using var tenantCtx = await tenantContextFactory.CreateDbContextAsync();
 
             // disable tracking we are read only
             resourceCtx.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-            tenantCtx.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
             var tm = System.Diagnostics.Stopwatch.StartNew();
 
@@ -157,18 +138,6 @@ public class DbServiceQuery(
                                    })
                                   .Take(limit)
                                   .ToListAsync();
-
-
-            // Get tenant IDs
-            var tenantIds = resources
-                .Select(r => r.Resource.TenantId)
-                .Distinct()
-                .ToList();
-
-            // Get all tenants in separate query
-            var tenants = await tenantCtx.Tenants
-                .Where(t => tenantIds.Contains(t.Id))
-                .ToDictionaryAsync(t => t.Id, t => t);
 
             // get resources keys in memory
             var resourceIds = resources
@@ -198,7 +167,6 @@ public class DbServiceQuery(
                     .FirstOrDefault(res => res.Resource.Id == r.Id && res.Resource.TenantId == r.TenantId)?.Resource ?? new(),
                 ResourceType = resources
                     .FirstOrDefault(res => res.Resource.Id == r.Id && res.Resource.TenantId == r.TenantId)?.ResourceType ?? new(),
-                Tenant = tenants.GetValueOrDefault(r.TenantId),
                 CurrentStatus = sts
                     .Where(s => s.ResourceId == r.Id && s.TenantId == r.TenantId)
                     .FirstOrDefault()?.Status,

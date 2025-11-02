@@ -1,3 +1,4 @@
+using ResourcesManager.Business.Application;
 using ResourcesManager.Business.Application.ExternalServices;
 
 namespace Services.ResourcesManager.Infrastructure.Services;
@@ -18,8 +19,6 @@ public static class ServicesClientsRegistration
             client.BaseAddress = new Uri(url);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
-
-        Console.WriteLine($"Configured SyncService client at url {url}");
     }
 
     public static void AddEventServiceClient(this IServiceCollection services, ConfigurationManager config)
@@ -30,12 +29,12 @@ public static class ServicesClientsRegistration
             client.BaseAddress = new Uri("http://localhost:6081");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
-        Console.WriteLine($"Configured EventService client at url {url}");
     }
 }
 
 
-public class SyncServiceClient(IHttpClientFactory Factory) : ISyncService
+public class SyncServiceClient(IHttpClientFactory factory, 
+    ILogger<SyncServiceClient> logger) : ISyncService
 {
     /// <summary>
     /// Definizione risposta TimeService
@@ -51,20 +50,20 @@ public class SyncServiceClient(IHttpClientFactory Factory) : ISyncService
     {
         try
         {
-            var cl = Factory.CreateClient(ServicesClientsRegistration.SYNC_SERVICE);
+            var cl = factory.CreateClient(ServicesClientsRegistration.SYNC_SERVICE);
             var resp = await cl.GetAsync("/api/v1/now");
             resp.EnsureSuccessStatusCode();
 
             var content = await resp.Content.ReadFromJsonAsync<SyncServiceResponse>();
             if (content?.utcUnixTime == null)
-                throw new Exception("TimeService responded with empty content");
+                throw new Exception("SyncService responded with empty content");
 
             return new OkOrError<long>(content.utcUnixTime.Value);
         }
         catch(Exception e)
         {
-            Console.WriteLine($"Error retrieving Time from TimeService {e.Message}");
-            return new OkOrError<long>($"Error retrieving Time from TimeService {e.Message}");
+            logger.LogError("Error retrieving Time from SyncService {ErrorMessage}", e.Message);
+            return new OkOrError<long>($"Error retrieving sync from SyncService {e.Message}");
         }
     }
 }
