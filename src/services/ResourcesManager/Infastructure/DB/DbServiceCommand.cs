@@ -86,7 +86,7 @@ public class DbServiceCommand(
             // resource creation
             var resource = new Resource
             {
-                Name = request.Name,
+                Code = request.Code,
                 TenantId = request.TenantId!.Value,
                 Description = request.Description,
                 ResourceTypeId = request.ResourceTypeId,

@@ -5,16 +5,21 @@ namespace ResourcesManager.Infrastructure.DB;
 
 public class TenantContext : DbContext
 {
+    public DbSet<Organization> Organizations { get; set; }
+    public DbSet<OrganizationHierarchy> OrganizationHierarchies { get; set; }
+    public DbSet<OrganizationType> OrganizationTypes { get; set; }
 
     public DbSet<Tenant> Tenants { get; set; }
     public DbSet<TenantHierarchy> TenantsHierarchy { get; set; }
     public DbSet<TenantType> TenantsTypes { get; set; }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<UserType> UserTypes { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
     public DbSet<UserUserGroup> UserUserGroups { get; set; }
 
     public DbSet<Role> Roles { get; set; }
+    public DbSet<RoleType> RoleTypes { get; set; }
     public DbSet<RoleUser> RoleUsers { get; set; }
     public DbSet<RoleGroup> RoleGroups { get; set; }
 
@@ -51,79 +56,6 @@ public class TenantContext : DbContext
 
         modelBuilder.Entity<RoleGroup>().HasKey(e => e.Id);
         modelBuilder.Entity<RoleGroup>().Property(e => e.Id).ValueGeneratedOnAdd();
-
-        modelBuilder.Entity<Tenant>()
-            .HasOne<TenantType>()
-            .WithMany()
-            .HasForeignKey(t => t.TenantTypeId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<TenantHierarchy>()
-            .HasOne<Tenant>()
-            .WithMany()
-            .HasForeignKey(th => th.TenantParentId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<TenantHierarchy>()
-            .HasOne<Tenant>()
-            .WithMany()
-            .HasForeignKey(th => th.TenantChildId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<User>()
-            .HasOne<Tenant>()
-            .WithMany()
-            .HasForeignKey(u => u.TenantId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<UserUserGroup>()
-            .HasOne<User>()
-            .WithMany()
-            .HasForeignKey(uug => uug.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<UserUserGroup>()
-            .HasOne<UserGroup>()
-            .WithMany()
-            .HasForeignKey(uug => uug.UserGroupId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<UserGroup>()
-            .HasOne<Tenant>()
-            .WithMany()
-            .HasForeignKey(ug => ug.TenantId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<RoleUser>()
-            .HasOne<Role>()
-            .WithMany()
-            .HasForeignKey(ru => ru.RoleId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<RoleUser>()
-            .HasOne<User>()            
-            .WithMany()
-            .HasForeignKey(ru => ru.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<RoleGroup>()
-            .HasOne<Role>()
-            .WithMany()
-            .HasForeignKey(rg => rg.RoleId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<RoleGroup>()
-            .HasOne<UserGroup>()
-            .WithMany()
-            .HasForeignKey(rg => rg.UserGroupId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Role>()
-            .HasOne<Tenant>()
-            .WithMany()
-            .HasForeignKey(r => r.TenantId)
-            .OnDelete(DeleteBehavior.Restrict);
-
     }
 }
 

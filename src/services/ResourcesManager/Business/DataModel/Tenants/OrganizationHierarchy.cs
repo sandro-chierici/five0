@@ -1,11 +1,11 @@
 namespace ResourcesManager.Business.DataModel.Tenants;
 
-public class UserUserGroup
+public class OrganizationHierarchy
 {
     public long Id { get; set; }
     public long TenantId { get; set; }
-    public long? OrganizationId { get; set; }
-    public long UserGroupId { get; set; }
-    public long UserId { get; set; }
+    public long OrganizationParentId { get; set; }
+    public long OrganizationChildId { get; set; }
     public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;
 }
+

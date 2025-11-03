@@ -10,7 +10,7 @@ public class ApiQuery()
     /// </summary>
     public long[]? Id { get; set; }
     /// <summary>
-    /// Name startsWith
+    /// Code startsWith
     /// </summary>
     public string? StartsWith { get; set; }
     /// <summary>

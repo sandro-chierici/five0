@@ -45,9 +45,9 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
                 { StartsWith: not null } and { StartsWith.Length: > 0 } =>
                 await dbQuery.GetResourcesAsync(
                     resource =>
-                    resource.Name != null &&
+                    resource.Code != null &&
                     resource.TenantId == tenantId &&
-                    resource.Name.ToLower().StartsWith(q.StartsWith.ToLower())),
+                    resource.Code.ToLower().StartsWith(q.StartsWith.ToLower())),
 
                 // get by typeid
                 { ResourceTypeId: not null } and { ResourceTypeId.Length: > 0 } =>
@@ -89,14 +89,13 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
             if (request == null)
                 return BadRequest(ApiResponse.ErrorResponse("Request body is required"));
 
-            if (string.IsNullOrWhiteSpace(request.Name))
+            if (string.IsNullOrWhiteSpace(request.Code))
                 return BadRequest(ApiResponse.ErrorResponse("Resource name is required"));
 
             if (request.TenantId != null && request.TenantId != tenantId)
                 return BadRequest(ApiResponse.ErrorResponse("TenantId into url and into request does not match"));
             request.TenantId = tenantId;
 
-            // Create the resource (assuming IDatabaseCommand interface exists)
             var createResult = await dbCommand.CreateResourceAsync(request);
 
             if (createResult.IsError)

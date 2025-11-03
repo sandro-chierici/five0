@@ -13,7 +13,8 @@ public static class ServicesClientsRegistration
 
     public static void AddTimeServiceClient(this IServiceCollection services, ConfigurationManager config)
     {
-        var url = config["Five0:SyncServiceUrl"] ?? "http://localhost:6080";
+        ;
+        var url = config.GetSection("Five0").GetValue<string>("SyncServiceUrl") ?? "http://localhost:6080";
         services.AddHttpClient(SYNC_SERVICE, client =>
         {
             client.BaseAddress = new Uri(url);
@@ -23,7 +24,7 @@ public static class ServicesClientsRegistration
 
     public static void AddEventServiceClient(this IServiceCollection services, ConfigurationManager config)
     {
-        var url = config["Five0:EventServiceUrl"] ?? "http://localhost:6090";
+        var url = config.GetSection("Five0").GetValue<string>("EventServiceUrl") ?? "http://localhost:6090";
         services.AddHttpClient(EVENT_SERVICE, client =>
         {
             client.BaseAddress = new Uri("http://localhost:6081");

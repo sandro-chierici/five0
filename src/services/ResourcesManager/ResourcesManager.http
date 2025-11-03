@@ -19,7 +19,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-    "name": "created-12",
+    "code": "created-12",
     "tenantId": 1,
     "description": "test-case",
     "resourceTypeId": 1,
