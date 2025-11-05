@@ -1,6 +1,6 @@
 namespace ResourcesManager.Business.DataModel.Tenants;
 
-public class RoleGroup
+public class RoleUserGroup
 {
     public long Id { get; set; }
     public long? TenantId { get; set; }

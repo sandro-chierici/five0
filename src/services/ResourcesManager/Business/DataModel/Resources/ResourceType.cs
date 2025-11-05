@@ -7,5 +7,6 @@ public class ResourceType
     public long? OrganizationId { get; set; }
     public string? Code { get; set; }
     public string? Description { get; set; }
+    public string? HasTable { get; set; }
     public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;
 }
