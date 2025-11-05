@@ -9,7 +9,6 @@ public class ResourceContext : DbContext
     public DbSet<ResourceGroup> ResourceGroups { get; set; }
     public DbSet<ResourceHierarchy> ResourcesHierarchy { get; set; }
     public DbSet<ResourceType> ResourceTypes { get; set; }
-    public DbSet<ResourceTypeHierarchy> ResourceTypesHierarchy { get; set; }
     public DbSet<ResourceResourceGroup> ResourceResourceGroups { get; set; }
     public DbSet<ResourceStatus> ResourceStatuses { get; set; }
     public DbSet<ResourceStatusHistory> ResourceStatusHistories { get; set; }
@@ -36,12 +35,6 @@ public class ResourceContext : DbContext
         modelBuilder.Entity<ResourceType>().Property(e => e.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<ResourceType>().HasIndex(e => e.TenantId);
         modelBuilder.Entity<ResourceType>().HasIndex(e => e.Code);
-
-        modelBuilder.Entity<ResourceTypeHierarchy>().HasKey(e => e.Id);
-        modelBuilder.Entity<ResourceTypeHierarchy>().Property(e => e.Id).ValueGeneratedOnAdd();
-        modelBuilder.Entity<ResourceTypeHierarchy>().HasIndex(e => e.TenantId);
-        modelBuilder.Entity<ResourceTypeHierarchy>().HasIndex(e => e.ResourceTypeParentId);
-        modelBuilder.Entity<ResourceTypeHierarchy>().HasIndex(e => e.ResourceTypeChildId);
 
         modelBuilder.Entity<ResourceResourceGroup>().HasKey(e => e.Id);
         modelBuilder.Entity<ResourceResourceGroup>().Property(e => e.Id).ValueGeneratedOnAdd();

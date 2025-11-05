@@ -8,5 +8,7 @@ public class ResourceType
     public string? Code { get; set; }
     public string? Description { get; set; }
     public string? HasTable { get; set; }
+    public long? ResourceTypeParentId { get; set; }
+    public bool IsRootType() => ResourceTypeParentId == null;
     public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;
 }
