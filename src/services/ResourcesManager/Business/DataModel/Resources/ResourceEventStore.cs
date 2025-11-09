@@ -1,7 +1,7 @@
 namespace ResourcesManager.Business.DataModel.Resources;
 
 // History class for tracking status changes
-public class ResourceStatusHistory
+public class ResourceEventStore
 {
     public long Id { get; set; }
     public long TenantId { get; set; }

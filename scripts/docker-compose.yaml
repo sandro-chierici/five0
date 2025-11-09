@@ -7,7 +7,6 @@
 #   rabbitmq mqtt on tcp listen on 1883 (8883 for ssl) see https://www.rabbitmq.com/docs/mqtt
 #   rabbitmq mqtt on ws (websocket) listen on 15675 (15676 for tls) see   https://www.rabbitmq.com/docs/web-mqtt
 
-version: '3.9'
 
 #-----------------
 #Enabling Plugins, see https://hub.docker.com/_/rabbitmq
@@ -27,7 +26,7 @@ services:
     image: postgres
     restart: always
     volumes:
-      - db-data:/var/lib/postgresql/data    
+      - db-data:/var/lib/postgresql    
     ports:
       - 5432:5432
     environment:

@@ -6,7 +6,7 @@ namespace ResourcesManager.Infrastructure.DB;
 public class TenantContext : DbContext
 {
     public DbSet<Organization> Organizations { get; set; }
-    public DbSet<OrganizationHierarchy> OrganizationHierarchies { get; set; }
+    public DbSet<OrganizationHierarchy> OrganizationHierarchy { get; set; }
     public DbSet<OrganizationType> OrganizationTypes { get; set; }
 
     public DbSet<Tenant> Tenants { get; set; }
@@ -21,11 +21,11 @@ public class TenantContext : DbContext
     public DbSet<Role> Roles { get; set; }
     public DbSet<RoleType> RoleTypes { get; set; }
     public DbSet<RoleUser> RoleUsers { get; set; }
-    public DbSet<RoleUserGroup> RoleGroups { get; set; }
+    public DbSet<RoleUserGroup> RoleUserGroups { get; set; }
 
     // Added tenant-scoped status entities
     public DbSet<UserStatus> UserStatuses { get; set; }
-    public DbSet<UserStatusHistory> UserStatusHistories { get; set; }
+    public DbSet<UserEventStore> UserEventStores { get; set; }
 
     public TenantContext(DbContextOptions<TenantContext> options) : base(options)
     { }
@@ -78,11 +78,11 @@ public class TenantContext : DbContext
         modelBuilder.Entity<UserStatus>().HasIndex(e => e.Code);
 
         // UserStatusHistory entity (status change history)
-        modelBuilder.Entity<UserStatusHistory>().HasKey(e => e.Id);
-        modelBuilder.Entity<UserStatusHistory>().Property(e => e.Id).ValueGeneratedOnAdd();
-        modelBuilder.Entity<UserStatusHistory>().HasIndex(e => e.TenantId);
-        modelBuilder.Entity<UserStatusHistory>().HasIndex(e => e.UserId);
-        modelBuilder.Entity<UserStatusHistory>().HasIndex(e => e.UserStatusId);
+        modelBuilder.Entity<UserEventStore>().HasKey(e => e.Id);
+        modelBuilder.Entity<UserEventStore>().Property(e => e.Id).ValueGeneratedOnAdd();
+        modelBuilder.Entity<UserEventStore>().HasIndex(e => e.TenantId);
+        modelBuilder.Entity<UserEventStore>().HasIndex(e => e.UserId);
+        modelBuilder.Entity<UserEventStore>().HasIndex(e => e.UserStatusId);
     }
 }
 

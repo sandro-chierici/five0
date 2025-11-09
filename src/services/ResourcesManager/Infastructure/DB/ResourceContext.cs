@@ -11,7 +11,7 @@ public class ResourceContext : DbContext
     public DbSet<ResourceType> ResourceTypes { get; set; }
     public DbSet<ResourceResourceGroup> ResourceResourceGroups { get; set; }
     public DbSet<ResourceStatus> ResourceStatuses { get; set; }
-    public DbSet<ResourceStatusHistory> ResourceStatusHistories { get; set; }
+    public DbSet<ResourceEventStore> ResourceEventStores { get; set; }
 
 
     public ResourceContext(DbContextOptions<ResourceContext> options) : base(options)
@@ -29,7 +29,7 @@ public class ResourceContext : DbContext
         modelBuilder.Entity<ResourceGroup>().HasKey(e => e.Id);
         modelBuilder.Entity<ResourceGroup>().Property(e => e.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<ResourceGroup>().HasIndex(e => e.TenantId);
-        modelBuilder.Entity<ResourceGroup>().HasIndex(e => e.Name);
+        modelBuilder.Entity<ResourceGroup>().HasIndex(e => e.Code);
 
         modelBuilder.Entity<ResourceType>().HasKey(e => e.Id);
         modelBuilder.Entity<ResourceType>().Property(e => e.Id).ValueGeneratedOnAdd();
@@ -53,11 +53,11 @@ public class ResourceContext : DbContext
         modelBuilder.Entity<ResourceStatus>().HasIndex(e => e.TenantId);
         modelBuilder.Entity<ResourceStatus>().HasIndex(e => e.Code);
 
-        modelBuilder.Entity<ResourceStatusHistory>().HasKey(e => e.Id);
-        modelBuilder.Entity<ResourceStatusHistory>().Property(e => e.Id).ValueGeneratedOnAdd();
-        modelBuilder.Entity<ResourceStatusHistory>().HasIndex(e => e.TenantId);
-        modelBuilder.Entity<ResourceStatusHistory>().HasIndex(e => e.ResourceId);
-        modelBuilder.Entity<ResourceStatusHistory>().HasIndex(e => e.ResourceStatusId);
+        modelBuilder.Entity<ResourceEventStore>().HasKey(e => e.Id);
+        modelBuilder.Entity<ResourceEventStore>().Property(e => e.Id).ValueGeneratedOnAdd();
+        modelBuilder.Entity<ResourceEventStore>().HasIndex(e => e.TenantId);
+        modelBuilder.Entity<ResourceEventStore>().HasIndex(e => e.ResourceId);
+        modelBuilder.Entity<ResourceEventStore>().HasIndex(e => e.ResourceStatusId);
     }
 }
 

@@ -48,7 +48,7 @@ public class DbServiceCommand(
             var localSystemNow = DateTimeOffset.UtcNow;
             var group = new ResourceGroup
             {
-                Name = request.Name,
+                Code = request.Name,
                 Description = request.Description,
                 TenantId = request.TenantId!.Value,
                 UtcCreated = localSystemNow
@@ -120,7 +120,7 @@ public class DbServiceCommand(
             }
 
             // generate event status for the new resource
-            var initialStatus = new ResourceStatusHistory
+            var initialStatus = new ResourceEventStore
             {
                 ResourceId = resource.Id,
                 ResourceStatusId = 1,
@@ -128,7 +128,7 @@ public class DbServiceCommand(
                 Notes = "Initial status upon creation",
                 UtcCreated = localSystemNow
             };
-            await rctx.ResourceStatusHistories.AddAsync(initialStatus);
+            await rctx.ResourceEventStores.AddAsync(initialStatus);
 
             await rctx.SaveChangesAsync();
 
@@ -169,7 +169,7 @@ public class DbServiceCommand(
             rctx.ResourceResourceGroups.RemoveRange(resourceGroups);
 
             // add deletions to resource status history
-            await rctx.ResourceStatusHistories.AddAsync(new ResourceStatusHistory
+            await rctx.ResourceEventStores.AddAsync(new ResourceEventStore
             {
                 ResourceId = res.Id,
                 ResourceStatusId = 3, // assuming 3 is the 'deleted' status

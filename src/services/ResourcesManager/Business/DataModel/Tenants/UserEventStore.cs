@@ -1,6 +1,6 @@
 namespace ResourcesManager.Business.DataModel.Tenants;
 
-public class UserStatusHistory
+public class UserEventStore
 {
     public long Id { get; set; }
     public long TenantId { get; set; }

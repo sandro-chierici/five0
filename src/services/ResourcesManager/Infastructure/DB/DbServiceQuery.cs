@@ -58,7 +58,7 @@ public class DbServiceQuery(
 
             // get statuses
             var sts = (from r in resources
-                       join rsh in resourceCtx.ResourceStatusHistories
+                       join rsh in resourceCtx.ResourceEventStores
                        on new { r.Resource.Id, r.Resource.TenantId } equals new { Id = rsh.ResourceId, rsh.TenantId }
                        join rs in resourceCtx.ResourceStatuses
                        on new { rsh.TenantId, Id = rsh.ResourceStatusId } equals new { rs.TenantId, rs.Id }
@@ -147,7 +147,7 @@ public class DbServiceQuery(
 
             // get statuses against Db
             var sts = (from r in resourceIds
-                       join rsh in resourceCtx.ResourceStatusHistories
+                       join rsh in resourceCtx.ResourceEventStores
                        on new { r.Id, r.TenantId } equals new { Id = rsh.ResourceId, rsh.TenantId }
                        join rs in resourceCtx.ResourceStatuses
                        on new { rsh.TenantId, Id = rsh.ResourceStatusId } equals new { rs.TenantId, rs.Id }
