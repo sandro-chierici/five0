@@ -70,17 +70,27 @@ public class DbServiceQuery(
                            Status = rs
                        }).ToList();
 
-            // Combine results
+            // Combine results           
             var data = resources.Select(r => new ResourceView
             {
-                Resource = r.Resource,
-                ResourceType = r.ResourceType,
-                CurrentStatus = sts
-                    .Where(s => s.ResourceId == r.Resource.Id && s.TenantId == r.Resource.TenantId)
-                    .FirstOrDefault()?.Status,
+                Id = r.Resource.Id,
+                TenantId = r.Resource.TenantId,
+                OrganizationId = r.Resource.OrganizationId,
+                Code = r.Resource.Code,
+                Description = r.Resource.Description,
+                ResourceType = new ResourceTypeView
+                {
+                    Code = r.ResourceType?.Code,
+                    Description = r.ResourceType?.Description,
+                    ResourceTypeParentId = r.ResourceType?.ResourceTypeParentId,
+                    IsRootType = r.ResourceType?.IsRootType() ?? false
+                },
+                CurrentStatus = new ResourceStatusView(
+                    sts.FirstOrDefault(s => s.ResourceId == r.Resource.Id && s.TenantId == r.Resource.TenantId)?.Status.Code,
+                    sts.FirstOrDefault(s => s.ResourceId == r.Resource.Id && s.TenantId == r.Resource.TenantId)?.Status.Description),
                 ResourceGroups = grps
                     .Where(g => g.Resource.Id == r.Resource.Id && g.Resource.TenantId == r.Resource.TenantId)
-                    .Select(r => r.Group)
+                    .Select(r => new ResourceGroupView(r.Group.Code, r.Group.Description))
                     .ToList()
             })
             .ToList();
@@ -160,21 +170,37 @@ public class DbServiceQuery(
                        }).ToList();
 
             // Combine results
-            var data = resourceIds
-            .Select(r => new ResourceView
+            var data = new List<ResourceView>();
+            foreach (var r in resourceIds)
             {
-                Resource = resources
-                    .FirstOrDefault(res => res.Resource.Id == r.Id && res.Resource.TenantId == r.TenantId)?.Resource ?? new(),
-                ResourceType = resources
-                    .FirstOrDefault(res => res.Resource.Id == r.Id && res.Resource.TenantId == r.TenantId)?.ResourceType ?? new(),
-                CurrentStatus = sts
-                    .Where(s => s.ResourceId == r.Id && s.TenantId == r.TenantId)
-                    .FirstOrDefault()?.Status,
-                ResourceGroups = resources
-                    .Where(res => res.Resource.Id == r.Id && res.Resource.TenantId == r.TenantId)
-                    .Select(r => r.Group)
-                    .ToList()
-            }).ToList();
+                var resource = resources
+                    .FirstOrDefault(res => res.Resource.Id == r.Id && res.Resource.TenantId == r.TenantId);
+
+                data.Add(new ResourceView
+                {
+                    Id = r.Id,
+                    TenantId = r.TenantId,
+                    OrganizationId = resource?.Resource.OrganizationId,
+                    Code = resource?.Resource.Code,
+                    Description = resource?.Resource.Description,
+                    ResourceType = new ResourceTypeView
+                    {
+                        Code = resource?.ResourceType?.Code,
+                        Description = resource?.ResourceType?.Description,
+                        ResourceTypeParentId = resource?.ResourceType?.ResourceTypeParentId,
+                        IsRootType = resource?.ResourceType?.IsRootType() ?? false
+                    },  
+                    CurrentStatus = new ResourceStatusView(
+                        sts.Where(s => s.ResourceId == r.Id && s.TenantId == r.TenantId)
+                        .FirstOrDefault()?.Status.Code,
+                        sts.Where(s => s.ResourceId == r.Id && s.TenantId == r.TenantId)
+                        .FirstOrDefault()?.Status.Description),
+                    ResourceGroups = resources
+                        .Where(res => res.Resource.Id == r.Id && res.Resource.TenantId == r.TenantId)
+                        .Select(rg => new ResourceGroupView(rg.Group.Code, rg.Group.Description))
+                        .ToList()
+                }); 
+            }   
 
             tm.Stop();
 
