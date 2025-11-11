@@ -1,0 +1,97 @@
+### CustomService API Tests
+
+### Health Check
+GET http://localhost:8080/health
+Content-Type: application/json
+
+###
+
+### Create Resource
+POST http://localhost:8080/api/v1/resources
+Content-Type: application/json
+
+{
+  "specs": {
+    "name": "server-01",
+    "type": "virtual-machine",
+    "cpu_cores": 4,
+    "memory_gb": 16,
+    "region": "us-east-1",
+    "tags": ["production", "web-server"]
+  }
+}
+
+###
+
+### List All Resources
+GET http://localhost:8080/api/v1/resources
+Content-Type: application/json
+
+###
+
+### Get Resource by ID (replace {resource-id} with actual ID from create response)
+GET http://localhost:8080/api/v1/resources/{resource-id}
+Content-Type: application/json
+
+###
+
+### Update Resource (replace {resource-id} with actual ID)
+PUT http://localhost:8080/api/v1/resources/{resource-id}
+Content-Type: application/json
+
+{
+  "specs": {
+    "name": "server-01-updated",
+    "type": "virtual-machine",
+    "cpu_cores": 8,
+    "memory_gb": 32,
+    "region": "us-west-1",
+    "tags": ["production", "web-server", "scaled-up"]
+  }
+}
+
+###
+
+### Delete Resource (replace {resource-id} with actual ID)
+DELETE http://localhost:8080/api/v1/resources/{resource-id}
+Content-Type: application/json
+
+###
+
+### Create Sample Storage Resource
+POST http://localhost:8080/api/v1/resources
+Content-Type: application/json
+
+{
+  "specs": {
+    "name": "storage-bucket-01",
+    "type": "object-storage",
+    "size_gb": 1000,
+    "encryption": true,
+    "redundancy": "multi-az"
+  }
+}
+
+###
+
+### Create Sample Network Resource
+POST http://localhost:8080/api/v1/resources
+Content-Type: application/json
+
+{
+  "specs": {
+    "name": "vpc-main",
+    "type": "virtual-network",
+    "cidr": "10.0.0.0/16",
+    "subnets": [
+      {
+        "name": "public-subnet",
+        "cidr": "10.0.1.0/24"
+      },
+      {
+        "name": "private-subnet", 
+        "cidr": "10.0.2.0/24"
+      }
+    ]
+  }
+}

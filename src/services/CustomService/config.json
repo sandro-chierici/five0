@@ -1,0 +1,14 @@
+{
+  "server": {
+    "port": "8080",
+    "host": "0.0.0.0"
+  },
+  "database": {
+    "mongodb_uri": "mongodb://localhost:27017",
+    "database_name": "customservice_db",
+    "collection_name": "resources"
+  },
+  "logging": {
+    "level": "info"
+  }
+}

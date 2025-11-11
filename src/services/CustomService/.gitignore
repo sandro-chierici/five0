@@ -1,0 +1,11 @@
+*.log
+/bin
+.env
+.DS_Store
+customservice
+customservice.exe
+.idea/
+.vscode/
+*.tmp
+*.swp
+*.swo
