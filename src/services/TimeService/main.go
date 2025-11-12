@@ -85,8 +85,8 @@ func SetupServer() {
 		}
 	})
 
-	// add a simple heartbeat endpoint for kube at url api/probes/healtz
-	http.HandleFunc("/api/probes/healtz", func(writer http.ResponseWriter, request *http.Request) {
+	// add a simple heartbeat endpoint for kube at url api/health/ready
+	http.HandleFunc("/api/health/ready", func(writer http.ResponseWriter, request *http.Request) {
 		if request.Method != http.MethodGet {
 			http.Error(writer, "Method not allowed", http.StatusMethodNotAllowed)
 			return

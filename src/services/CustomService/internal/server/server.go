@@ -36,7 +36,7 @@ func (s *Server) SetupRoutes() {
 	resourceHandler := handlers.NewResourceHandler(resourceRepository)
 
 	// Health check endpoint
-	s.router.GET("/api/probes/ready", healthHandler.HealthCheck)
+	s.router.GET("/api/health/ready", healthHandler.HealthCheck)
 
 	// API v1 routes
 	v1 := s.router.Group("/api/v1")
@@ -61,7 +61,7 @@ func (s *Server) Start() error {
 
 	serverAddr := s.config.GetServerAddr()
 	log.Printf("Starting CustomService on %s", serverAddr)
-	log.Println("Health check: http://" + serverAddr + "/api/probes/ready")
+	log.Println("Health check: http://" + serverAddr + "/api/health/ready")
 	log.Println("API endpoints: http://" + serverAddr + "/api/v1/resources")
 
 	return s.router.Run(serverAddr)

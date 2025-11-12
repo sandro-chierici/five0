@@ -13,7 +13,6 @@ public static class ServicesClientsRegistration
 
     public static void AddTimeServiceClient(this IServiceCollection services, ConfigurationManager config)
     {
-        ;
         var url = config.GetSection("Five0").GetValue<string>("SyncServiceUrl") ?? "http://localhost:6080";
         services.AddHttpClient(SYNC_SERVICE, client =>
         {

@@ -63,6 +63,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHealthChecks("/_healtz");
-
 app.Run();

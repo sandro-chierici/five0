@@ -3,7 +3,7 @@ using ResourcesManager.Business.Application;
 
 namespace ResourcesManager.Adapters.Api;
 
-[Route("api/probes")]
+[Route("api/health")]
 [ApiController]
 public class ProbesController(IDatabaseQuery DBQuery, ILogger<ProbesController> logger) : ControllerBase
 {

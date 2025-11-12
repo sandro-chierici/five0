@@ -31,15 +31,15 @@ GET {{ResourceManager_HostAddress}}/api/v1/commands/createdb
 Accept: application/json
 
 ###
-GET {{ResourceManager_HostAddress}}/api/probes/ready
+GET {{ResourceManager_HostAddress}}/api/health/ready
 Accept: application/json
 
 ###
-GET {{ResourceManager_HostAddress}}/api/probes/live
+GET {{ResourceManager_HostAddress}}/api/health/live
 Accept: application/json
 
 ###
-GET {{ResourceManager_HostAddress}}/api/probes/startup
+GET {{ResourceManager_HostAddress}}/api/health/startup
 Accept: application/json
 
 ### test timeservice
