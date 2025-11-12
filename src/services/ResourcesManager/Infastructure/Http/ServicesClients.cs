@@ -1,5 +1,6 @@
 using ResourcesManager.Business.Application;
-using ResourcesManager.Business.Application.ExternalServices;
+using ResourcesManager.Business.Application.ExternalServices.SyncService;
+
 
 namespace Services.ResourcesManager.Infrastructure.Services;
 
@@ -10,6 +11,7 @@ public static class ServicesClientsRegistration
 {
     public const string SYNC_SERVICE = "SyncServiceClient";
     public const string EVENT_SERVICE = "EventServiceClient";
+    public const string CUSTOM_SERVICE = "CustomServiceClient";
 
     public static void AddTimeServiceClient(this IServiceCollection services, ConfigurationManager config)
     {
@@ -23,17 +25,28 @@ public static class ServicesClientsRegistration
 
     public static void AddEventServiceClient(this IServiceCollection services, ConfigurationManager config)
     {
-        var url = config.GetSection("Five0").GetValue<string>("EventServiceUrl") ?? "http://localhost:6090";
+        var url = config.GetSection("Five0").GetValue<string>("EventServiceUrl") ?? "http://localhost:6081";
         services.AddHttpClient(EVENT_SERVICE, client =>
         {
             client.BaseAddress = new Uri("http://localhost:6081");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
     }
+
+    public static void AddCustomServiceClient(this IServiceCollection services, ConfigurationManager config)
+    {
+        var url = config.GetSection("Five0").GetValue<string>("CustomServiceUrl") ?? "http://localhost:6082";
+        services.AddHttpClient(CUSTOM_SERVICE, client =>
+        {
+            client.BaseAddress = new Uri("http://localhost:6082");
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+        });
+    }
 }
 
 
-public class SyncServiceClient(IHttpClientFactory factory, 
+public class SyncServiceClient(
+    IHttpClientFactory factory,
     ILogger<SyncServiceClient> logger) : ISyncService
 {
     /// <summary>
@@ -60,11 +73,14 @@ public class SyncServiceClient(IHttpClientFactory factory,
 
             return new OkOrError<long>(content.utcUnixTime.Value);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             logger.LogError("Error retrieving Time from SyncService {ErrorMessage}", e.Message);
             return new OkOrError<long>($"Error retrieving sync from SyncService {e.Message}");
         }
     }
 }
+
+
+
 
