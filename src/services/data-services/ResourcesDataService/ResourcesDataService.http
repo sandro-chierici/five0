@@ -1,0 +1,48 @@
+@ResourceManager_HostAddress = http://localhost:5000
+
+###
+GET {{ResourceManager_HostAddress}}/api/v1/tenant/1/resources/1
+Accept: application/json
+
+###
+POST {{ResourceManager_HostAddress}}/api/v1/tenant/1/resources/_search
+Accept: application/json
+Content-Type: application/json
+
+{
+    "resourceTypeId": [1,2,3,4,5,6,7,8,9,10]
+}
+
+###
+POST {{ResourceManager_HostAddress}}/api/v1/tenant/1/resources
+Accept: application/json
+Content-Type: application/json
+
+{
+    "code": "created-12",
+    "tenantId": 1,
+    "description": "test-case",
+    "resourceTypeId": 1,
+    "resourceGroupId": 1
+}
+
+###
+GET {{ResourceManager_HostAddress}}/api/v1/commands/createdb
+Accept: application/json
+
+###
+GET {{ResourceManager_HostAddress}}/api/health/ready
+Accept: application/json
+
+###
+GET {{ResourceManager_HostAddress}}/api/health/live
+Accept: application/json
+
+###
+GET {{ResourceManager_HostAddress}}/api/health/startup
+Accept: application/json
+
+### test timeservice
+###
+GET http://locahost:6081/api/v1/now
+Accept: application/json

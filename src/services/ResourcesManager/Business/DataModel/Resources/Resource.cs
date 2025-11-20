@@ -5,6 +5,9 @@
 /// </summary>
 public class Resource
 {
+    /// <summary>
+    /// Database Primary key
+    /// </summary>
     public long Id { get; set; }
     public long TenantId { get; set; }
     public long? OrganizationId { get; set; }
