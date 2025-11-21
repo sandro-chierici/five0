@@ -3,33 +3,34 @@ namespace ResourcesManager.Business.DataModel.Resources;
 
 /// <summary>
 /// Resource Status
-/// Entity key is tuple (Code, Tenant, Org) 
-/// Could be tenant Wide (no Org)
 /// </summary>
+[Table("resource_status")]
 public class ResourceStatus
 {
     /// <summary>
     /// Database Primary key
     /// </summary>
-    public long Id { get; set; }
-    /// <summary>
-    /// Code part of the Entity primary key
-    /// </summary>
-    public string Code { get; set; }
-    /// <summary>
-    /// Tenant Id part of the Entity primary key
-    /// </summary>  
-    public string Tenant { get; set; }
-    /// <summary>
-    /// Organization Id part of the Entity primary key
-    /// </summary>
-    public string? Org { get; set; }
+    [Column("resourcestatus_id")]
+    public long ResourceStatusId { get; set; }
+
+    [Column("tenant_code")]
+    public string TenantCode { get; set; }
+
+    [Column("resourcestatus_code")]
+    public string ResourceStatusCode { get; set; }
+
+    [Column("name")]
     public string? Name { get; set; }
+
+    [Column("description")] 
     public string? Description { get; set; }
     /// <summary>
     /// Resource Status Metadata in JSON format
     /// </summary>
+    [Column("metadata")]    
     public string? Metadata { get; set; }
+
+    [Column("utc_created")]
     public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;
 }
 

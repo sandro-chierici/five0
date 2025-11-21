@@ -2,16 +2,28 @@
 
 /// <summary>
 /// Resource Group
-/// Entity key is tuple (Tenant, Code, Org)
 /// </summary>
+[Table("resource_group")]
 public class ResourceGroup
 {
-    public long Id { get; set; }
-    public string Tenant { get; set; }
-    public string Code { get; set; }
-    public string Org { get; set; }
+    [Column("resourcegroup_id")]
+    public long ResourceGroupId { get; set; }
+
+    [Column("tenant_code")]
+    public string TenantCode { get; set; }
+
+    [Column("resourcegroup_code")]
+    public string ResourceGroupCode { get; set; }
+
+    [Column("name")]
     public string? Name { get; set; }
+
+    [Column("description")]
     public string? Description { get; set; }
+
+    [Column("metadata")]
     public string? Metadata { get; set; }
-     public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;
+
+    [Column("utc_created")]
+    public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;
 }

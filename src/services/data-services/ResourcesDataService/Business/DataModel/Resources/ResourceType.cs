@@ -2,39 +2,48 @@
 
 /// <summary>
 /// Resource Type def
-/// Entity key is tuplate (TenantId, Code, OrganizationId)
 /// </summary>
+[Table("resource_type")]
 public class ResourceType
 {
     /// <summary>
     /// Database Primary key
     /// </summary>
-    public long Id { get; set; }
+    [Column("resourcetype_id")]
+    public long ResourceTypeId { get; set; }
     /// <summary>
-    /// Tenant Id part of the Entity primary key
+    /// Tenant Code part of the Entity primary key
     /// </summary>
-    public string Tenant { get; set; }
+    [Column("tenant_code")]
+    public string TenantCode { get; set; }
     /// <summary>
     /// Code part of the Entity primary key
     /// </summary>
-    public string Code { get; set; }
-    /// <summary>
-    /// Organization Id part of the Entity primary key
-    /// </summary>
-    public string Org { get; set; }
+    [Column("resourcetype_code")]
+    public string ResourceTypeCode { get; set; }
     /// <summary>
     /// Mnemonic name of the Resource Type
     /// </summary>
+    [Column("name")]
     public string? Name { get; set; }
+    /// <summary>
+    /// Mnemonic description of the Resource Type
+    /// </summary>
+    [Column("description")]
     public string? Description { get; set; }
     /// <summary>
     /// Resource Type Metadata in JSON format
     /// </summary>
+    [Column("metadata")]
     public string? Metadata { get; set; }
     /// <summary>
     /// Parent Resource Type Code
     /// </summary>
-    public string? ResourceTypeParentCode { get; set; }
-    public bool IsRootType() => ResourceTypeParentCode == null;
+    [Column("parent_resourcetype_id")]
+    public long? ParentResourceTypeId { get; set; }
+
+    [Column("utc_created")]
     public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;
+
+    public bool IsRootType() => ParentResourceTypeId == null;
 }

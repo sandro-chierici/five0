@@ -6,9 +6,9 @@ namespace ResourcesManager.Adapters.Api.V1.ApiInterfaces;
 public class ApiQuery()
 {
     /// <summary>
-    /// Search with a list of ids
+    /// Search with a list of Resource codes
     /// </summary>
-    public long[]? Id { get; set; }
+    public string[]? Ids { get; set; }
     /// <summary>
     /// Code startsWith
     /// </summary>
@@ -16,14 +16,14 @@ public class ApiQuery()
     /// <summary>
     /// Resource has typeId
     /// </summary>
-    public long[]? ResourceTypeId { get; set; }
+    public string[]? ResourceTypeId { get; set; }
     /// <summary>
     /// resource is in the group
     /// </summary>
-    public long[]? ResourceGroupId { get; set; }
+    public string[]? ResourceGroupId { get; set; }
     /// <summary>
     /// by status
     /// </summary>
-    public long[]? ResourceStatusId { get; set; }
+    public string[]? ResourceStatusId { get; set; }
 
 }

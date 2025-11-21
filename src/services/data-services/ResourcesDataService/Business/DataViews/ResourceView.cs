@@ -2,25 +2,23 @@
 
 public record struct ResourceTypeView()
 {
-    public string? Code { get; init; }
+    public string? Id { get; init; }
     public string? Description { get; init; }
-    public long? ResourceTypeParentId { get; init; }
     public bool IsRootType { get; init; }
 }
 
-public record struct ResourceStatusView(string? Code, string? Description);
+public record struct ResourceStatusView(string? Id, string? Description);
 
-public record struct ResourceGroupView(string? Code, string? Description);
+public record struct ResourceGroupView(string? Id, string? Description);
 
 /// <summary>
 /// Resource def
 /// </summary>
 public record ResourceView()
 {
-    public long Id { get; init; }
-    public long TenantId { get; init; }
-    public long? OrganizationId { get; init; }
-    public string? Code { get; init; }
+    public string? Id { get; set; }
+    public long? TenantId { get; init; }
+    public string? Name { get; init; }
     public string? Description { get; init; }
     public ResourceTypeView? ResourceType { get; init; }
     public DateTimeOffset? UtcCreated { get; init; }

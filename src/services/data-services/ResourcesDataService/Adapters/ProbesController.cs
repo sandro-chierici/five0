@@ -44,7 +44,7 @@ public class ProbesController(IDatabaseQuery DBQuery, ILogger<ProbesController> 
         {
             logger.LogError("Startup check failed: {ErrorMessage}", ex.Message);
             return StatusCode(500, $"Exception during startup check: {ex.Message}");
-        }   
+        }
 
         // Here you can add any custom startup checks if needed
         return await ValueTask.FromResult(Ok());
