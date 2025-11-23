@@ -1,4 +1,6 @@
-﻿namespace ResourcesManager.Business.DataModel.Resources;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ResourcesManager.Business.DataModel.Resources;
 
 /// <summary>
 /// Resources hierarchy
@@ -10,7 +12,7 @@ public class ResourceTree
     public long ResourceTreeId { get; set; }
 
     [Column("tenant_code")]
-    public string TenantCode { get; set; }
+    public required string TenantCode { get; set; }
 
     [Column("parent_resource_id")]
     public long ParentResourceId { get; set; }

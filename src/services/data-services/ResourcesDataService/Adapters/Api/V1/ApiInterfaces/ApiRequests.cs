@@ -5,11 +5,13 @@
 /// </summary>
 public class CreateResourceRequest
 {
-    public string? Code { get; set; }
-    public long? TenantId { get; set; }
+    public string? ResourceCode { get; set; }
+    public string? TenantCode { get; set; }
+    public string? Name { get; set; }
     public string? Description { get; set; }
-    public long? ResourceTypeId { get; set; }
-    public long? ResourceGroupId { get; set; }
+    public string? ResourceTypeCode { get; set; }
+    public string? ResourceGroupCode { get; set; }
+    public object? Metadata { get; set; }
 }
 
 /// <summary>
@@ -17,8 +19,9 @@ public class CreateResourceRequest
 /// </summary>
 public class CreateResourceGroupRequest
 {
+    public string? ResourceGroupCode { get; set; }
     public string? Name { get; set; }
-    public long? TenantId { get; set; }
     public string? Description { get; set; }
-    public long? ResourceGroupId { get; set; }
+    public string? ParentResourceGroupCode { get; set; }
+    public object? Metadata { get; set; }
 }

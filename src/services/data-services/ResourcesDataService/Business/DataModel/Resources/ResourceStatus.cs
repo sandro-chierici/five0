@@ -1,4 +1,6 @@
 
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ResourcesManager.Business.DataModel.Resources;
 
 /// <summary>
@@ -14,10 +16,10 @@ public class ResourceStatus
     public long ResourceStatusId { get; set; }
 
     [Column("tenant_code")]
-    public string TenantCode { get; set; }
+    public required string TenantCode { get; set; }
 
     [Column("resourcestatus_code")]
-    public string ResourceStatusCode { get; set; }
+    public required string ResourceStatusCode { get; set; }
 
     [Column("name")]
     public string? Name { get; set; }

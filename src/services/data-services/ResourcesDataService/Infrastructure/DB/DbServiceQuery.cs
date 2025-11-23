@@ -44,10 +44,9 @@ public class DbServiceQuery(
 
             // get all groups in a separate query
             var grps = (from rv in resources
-                        join rrg in resourceCtx.ResourceResourceGroups
-                        on new { rv.Resource.Id, rv.Resource.TenantId } equals new { Id = rrg.ResourceId, rrg.TenantId }
-                        join rg in resourceCtx.ResourceGroups
-                        on new { rrg.ResourceGroupId, rrg.TenantId } equals new { ResourceGroupId = rg.Id, rg.TenantId }
+                        join rrg in resourceCtx.ResourceToGroups
+                        on new { rv.Resource.TenantCode, rv.Resource.ResourceId } equals new { rrg.TenantCode, rrg.ResourceId }
+                        join rg in resourceCtx.ResourceGroups on new { rrg.TenantCode, rrg.ResourceGroupId } equals new { rg.TenantCode, rg.ResourceGroupId }
                         select new
                         {
                             rv.Resource,
@@ -56,41 +55,45 @@ public class DbServiceQuery(
                         }).ToList();
 
             // get statuses
-            var sts = (from r in resources
-                       join rsh in resourceCtx.ResourceEventStores
-                       on new { r.Resource.Id, r.Resource.TenantId } equals new { Id = rsh.ResourceId, rsh.TenantId }
-                       join rs in resourceCtx.ResourceStatuses
-                       on new { rsh.TenantId, Id = rsh.ResourceStatusId } equals new { rs.TenantId, rs.Id }
-                       orderby rsh.UtcCreated descending
-                       select new
-                       {
-                           ResourceId = r.Resource.Id,
-                           r.Resource.TenantId,
-                           Status = rs
-                       }).ToList();
+            // var sts = (from r in resources
+            //            join rsh in resourceCtx.ResourceEventStores
+            //            on new { r.Resource.Id, r.Resource.TenantId } equals new { Id = rsh.ResourceId, rsh.TenantId }
+            //            join rs in resourceCtx.ResourceStatuses
+            //            on new { rsh.TenantId, Id = rsh.ResourceStatusId } equals new { rs.TenantId, rs.Id }
+            //            orderby rsh.UtcCreated descending
+            //            select new
+            //            {
+            //                ResourceId = r.Resource.Id,
+            //                r.Resource.TenantId,
+            //                Status = rs
+            //            }).ToList();
 
             // Combine results           
             var data = resources.Select(r => new ResourceView
             {
-                Id = r.Resource.Id,
-                TenantId = r.Resource.TenantId,
-                OrganizationId = r.Resource.OrganizationId,
-                Code = r.Resource.Code,
+                ResourceCode = r.Resource.ResourceCode,
+                TenantCode = r.Resource.TenantCode,
+                Name = r.Resource.Name,
                 Description = r.Resource.Description,
                 ResourceType = new ResourceTypeView
                 {
-                    Code = r.ResourceType?.Code,
+                    ResourceTypeCode = r.ResourceType?.ResourceTypeCode,
                     Description = r.ResourceType?.Description,
-                    ResourceTypeParentId = r.ResourceType?.ResourceTypeParentId,
                     IsRootType = r.ResourceType?.IsRootType() ?? false
                 },
-                CurrentStatus = new ResourceStatusView(
-                    sts.FirstOrDefault(s => s.ResourceId == r.Resource.Id && s.TenantId == r.Resource.TenantId)?.Status.Code,
-                    sts.FirstOrDefault(s => s.ResourceId == r.Resource.Id && s.TenantId == r.Resource.TenantId)?.Status.Description),
+                UtcCreated = r.Resource.UtcCreated,
+                // CurrentStatus = new ResourceStatusView(
+                //     sts.Where(s => s.ResourceId == r.Resource.Id && s.TenantId == r.Resource.TenantId)
+                //     .FirstOrDefault()?.Status.Code,
+                //     sts.Where(s => s.ResourceId == r.Resource.Id && s.TenantId == r.Resource.TenantId)
+                //     .FirstOrDefault()?.Status.Description),
                 ResourceGroups = grps
-                    .Where(g => g.Resource.Id == r.Resource.Id && g.Resource.TenantId == r.Resource.TenantId)
-                    .Select(r => new ResourceGroupView(r.Group.Code, r.Group.Description))
-                    .ToList()
+                    .Where(gr => gr.Resource.ResourceId == r.Resource.ResourceId &&
+                                 gr.Resource.TenantCode == r.Resource.TenantCode)
+                    .Select(g => new ResourceGroupView(g.Group.ResourceGroupCode, g.Group.Description))
+                    .ToList(),
+                Metadata = r.Resource.Metadata != null ? 
+                            System.Text.Json.JsonSerializer.Deserialize<object>(r.Resource.Metadata) : null
             })
             .ToList();
 
@@ -119,105 +122,105 @@ public class DbServiceQuery(
     /// <param name="filter"></param>
     /// <param name="limit"></param>
     /// <returns></returns>
-    public async ValueTask<QueryResponse<List<ResourceView>>> GetResourcesByGroupAsync(
-         Expression<Func<ResourceGroup, bool>> filter,
-         int limit = ResourceRules.ResourcesQueryLimit)
-    {
-        throw new NotImplementedException();
-        // try
-        // {
-        //     using var resourceCtx = await resourceContextFactory.CreateDbContextAsync();
+    // public async ValueTask<QueryResponse<List<ResourceView>>> GetResourcesByGroupAsync(
+    //      Expression<Func<ResourceGroup, bool>> filter,
+    //      int limit = ResourceRules.ResourcesQueryLimit)
+    // {
+    //     throw new NotImplementedException();
+    //     // try
+    //     // {
+    //     //     using var resourceCtx = await resourceContextFactory.CreateDbContextAsync();
 
-        //     // disable tracking we are read only
-        //     resourceCtx.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+    //     //     // disable tracking we are read only
+    //     //     resourceCtx.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
-        //     var tm = System.Diagnostics.Stopwatch.StartNew();
+    //     //     var tm = System.Diagnostics.Stopwatch.StartNew();
 
-        //     // get all groups
-        //     var resources = await (from g in resourceCtx.ResourceGroups.Where(filter)
-        //                            join rrg in resourceCtx.ResourceResourceGroups on g.Id equals rrg.ResourceGroupId
-        //                            join r in resourceCtx.Resources on rrg.ResourceId equals r.Id
-        //                            join t in resourceCtx.ResourceTypes on
-        //                            new { r.TenantId, Id = r.ResourceTypeId ?? 0 } equals new { t.TenantId, t.Id } into tg
-        //                            from resourceType in tg.DefaultIfEmpty()
-        //                            select new
-        //                            {
-        //                                Resource = r,
-        //                                ResourceType = resourceType,
-        //                                Group = g
-        //                            })
-        //                           .Take(limit)
-        //                           .ToListAsync();
+    //     //     // get all groups
+    //     //     var resources = await (from g in resourceCtx.ResourceGroups.Where(filter)
+    //     //                            join rrg in resourceCtx.ResourceResourceGroups on g.Id equals rrg.ResourceGroupId
+    //     //                            join r in resourceCtx.Resources on rrg.ResourceId equals r.Id
+    //     //                            join t in resourceCtx.ResourceTypes on
+    //     //                            new { r.TenantId, Id = r.ResourceTypeId ?? 0 } equals new { t.TenantId, t.Id } into tg
+    //     //                            from resourceType in tg.DefaultIfEmpty()
+    //     //                            select new
+    //     //                            {
+    //     //                                Resource = r,
+    //     //                                ResourceType = resourceType,
+    //     //                                Group = g
+    //     //                            })
+    //     //                           .Take(limit)
+    //     //                           .ToListAsync();
 
-        //     // get resources keys in memory
-        //     var resourceIds = resources
-        //         .Select(r => new { r.Resource.Id, r.Resource.TenantId })
-        //         .Distinct()
-        //         .ToList();
+    //     //     // get resources keys in memory
+    //     //     var resourceIds = resources
+    //     //         .Select(r => new { r.Resource.Id, r.Resource.TenantId })
+    //     //         .Distinct()
+    //     //         .ToList();
 
-        //     // get statuses against Db
-        //     var sts = (from r in resourceIds
-        //                join rsh in resourceCtx.ResourceEventStores
-        //                on new { r.Id, r.TenantId } equals new { Id = rsh.ResourceId, rsh.TenantId }
-        //                join rs in resourceCtx.ResourceStatuses
-        //                on new { rsh.TenantId, Id = rsh.ResourceStatusId } equals new { rs.TenantId, rs.Id }
-        //                orderby rsh.UtcCreated descending
-        //                select new
-        //                {
-        //                    ResourceId = r.Id,
-        //                    r.TenantId,
-        //                    Status = rs
-        //                }).ToList();
+    //     //     // get statuses against Db
+    //     //     var sts = (from r in resourceIds
+    //     //                join rsh in resourceCtx.ResourceEventStores
+    //     //                on new { r.Id, r.TenantId } equals new { Id = rsh.ResourceId, rsh.TenantId }
+    //     //                join rs in resourceCtx.ResourceStatuses
+    //     //                on new { rsh.TenantId, Id = rsh.ResourceStatusId } equals new { rs.TenantId, rs.Id }
+    //     //                orderby rsh.UtcCreated descending
+    //     //                select new
+    //     //                {
+    //     //                    ResourceId = r.Id,
+    //     //                    r.TenantId,
+    //     //                    Status = rs
+    //     //                }).ToList();
 
-        //     // Combine results
-        //     var data = new List<ResourceView>();
-        //     foreach (var r in resourceIds)
-        //     {
-        //         var resource = resources
-        //             .FirstOrDefault(res => res.Resource.Id == r.Id && res.Resource.TenantId == r.TenantId);
+    //     //     // Combine results
+    //     //     var data = new List<ResourceView>();
+    //     //     foreach (var r in resourceIds)
+    //     //     {
+    //     //         var resource = resources
+    //     //             .FirstOrDefault(res => res.Resource.Id == r.Id && res.Resource.TenantId == r.TenantId);
 
-        //         data.Add(new ResourceView
-        //         {
-        //             Id = r.Id,
-        //             TenantId = r.TenantId,
-        //             OrganizationId = resource?.Resource.OrganizationId,
-        //             Code = resource?.Resource.Code,
-        //             Description = resource?.Resource.Description,
-        //             ResourceType = new ResourceTypeView
-        //             {
-        //                 Code = resource?.ResourceType?.Code,
-        //                 Description = resource?.ResourceType?.Description,
-        //                 ResourceTypeParentId = resource?.ResourceType?.ResourceTypeParentId,
-        //                 IsRootType = resource?.ResourceType?.IsRootType() ?? false
-        //             },  
-        //             CurrentStatus = new ResourceStatusView(
-        //                 sts.Where(s => s.ResourceId == r.Id && s.TenantId == r.TenantId)
-        //                 .FirstOrDefault()?.Status.Code,
-        //                 sts.Where(s => s.ResourceId == r.Id && s.TenantId == r.TenantId)
-        //                 .FirstOrDefault()?.Status.Description),
-        //             ResourceGroups = resources
-        //                 .Where(res => res.Resource.Id == r.Id && res.Resource.TenantId == r.TenantId)
-        //                 .Select(rg => new ResourceGroupView(rg.Group.Code, rg.Group.Description))
-        //                 .ToList()
-        //         }); 
-        //     }   
+    //     //         data.Add(new ResourceView
+    //     //         {
+    //     //             Id = r.Id,
+    //     //             TenantId = r.TenantId,
+    //     //             OrganizationId = resource?.Resource.OrganizationId,
+    //     //             Code = resource?.Resource.Code,
+    //     //             Description = resource?.Resource.Description,
+    //     //             ResourceType = new ResourceTypeView
+    //     //             {
+    //     //                 Code = resource?.ResourceType?.Code,
+    //     //                 Description = resource?.ResourceType?.Description,
+    //     //                 ResourceTypeParentId = resource?.ResourceType?.ResourceTypeParentId,
+    //     //                 IsRootType = resource?.ResourceType?.IsRootType() ?? false
+    //     //             },  
+    //     //             CurrentStatus = new ResourceStatusView(
+    //     //                 sts.Where(s => s.ResourceId == r.Id && s.TenantId == r.TenantId)
+    //     //                 .FirstOrDefault()?.Status.Code,
+    //     //                 sts.Where(s => s.ResourceId == r.Id && s.TenantId == r.TenantId)
+    //     //                 .FirstOrDefault()?.Status.Description),
+    //     //             ResourceGroups = resources
+    //     //                 .Where(res => res.Resource.Id == r.Id && res.Resource.TenantId == r.TenantId)
+    //     //                 .Select(rg => new ResourceGroupView(rg.Group.Code, rg.Group.Description))
+    //     //                 .ToList()
+    //     //         }); 
+    //     //     }   
 
-        //     tm.Stop();
+    //     //     tm.Stop();
 
-        //     return new()
-        //     {
-        //         Results = data,
-        //         Metadata =
-        //         {
-        //             RowsRead = data.Count(),
-        //             QueryExecutionMillis = tm.ElapsedMilliseconds
-        //         }
-        //     };
-        // }
-        // catch (Exception ex)
-        // {
-        //     return new() { QueryError = new Error(ex.Message, ErrorCodes.GenericError) };
-        // }
-    }
+    //     //     return new()
+    //     //     {
+    //     //         Results = data,
+    //     //         Metadata =
+    //     //         {
+    //     //             RowsRead = data.Count(),
+    //     //             QueryExecutionMillis = tm.ElapsedMilliseconds
+    //     //         }
+    //     //     };
+    //     // }
+    //     // catch (Exception ex)
+    //     // {
+    //     //     return new() { QueryError = new Error(ex.Message, ErrorCodes.GenericError) };
+    //     // }
+    // }
 }
 

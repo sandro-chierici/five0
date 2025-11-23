@@ -24,6 +24,7 @@ builder.Services.AddDbContextFactory<ResourceContext>(
     });
 
 builder.Services.Configure<Five0Config>(builder.Configuration.GetSection("Five0"));
+builder.Services.Configure<ResourceDataServiceConfig>(builder.Configuration.GetSection("ResourceDataService"));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

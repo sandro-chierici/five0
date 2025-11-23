@@ -39,25 +39,24 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
             q switch
             {
                 // get a sequence of ids
-                { Ids: not null } and { Ids.Length: > 0 } =>
+                { ResourceCode: not null } and { ResourceCode.Length: > 0 } =>
                 await dbQuery.GetResourcesAsync(
-                    resource => q.Ids.Contains(resource.ResourceCode) && resource.TenantCode == tenant),
+                    resource => resource.TenantCode == tenant && q.ResourceCode.Contains(resource.ResourceCode)),
 
                 // get by name
-                { StartsWith: not null } and { StartsWith.Length: > 0 } =>
+                { NameStartsWith: not null } and { NameStartsWith.Length: > 0 } =>
                 await dbQuery.GetResourcesAsync(
                     resource =>
-                    resource.ResourceCode != null &&
                     resource.TenantCode == tenant &&
-                    resource.ResourceCode.ToLower().StartsWith(q.StartsWith.ToLower())),
+                    resource.ResourceCode.ToLower().StartsWith(q.NameStartsWith.ToLower())),
 
                 // // get by typeid
-                // { ResourceTypeId: not null } and { ResourceTypeId.Length: > 0 } =>
+                // { ResourceTypeCode: not null } and { ResourceTypeCode.Length: > 0 } =>
                 // await dbQuery.GetResourcesAsync(
                 //     resource =>
                 //     resource.TenantCode == tenant &&
-                //     resource.ResourceTypeId.HasValue &&
-                //     q.ResourceTypeId.Contains(resource.ResourceTypeId.Value)),
+                //     resource.ResourceType != null &&
+                //     q.ResourceTypeCode.Contains(resource.ResourceType.ResourceTypeCode)),
 
                 // // get by groupId
                 // { ResourceGroupId: not null } and { ResourceGroupId.Length: > 0 } =>
@@ -83,7 +82,7 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost]
-    public async ValueTask<ActionResult<ApiResponse>> CreateOne(long tenantId, [FromBody] CreateResourceRequest request)
+    public async ValueTask<ActionResult<ApiResponse>> CreateOne(string tenant, [FromBody] CreateResourceRequest request)
     {
         try
         {
@@ -91,12 +90,10 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
             if (request == null)
                 return BadRequest(ApiResponse.ErrorResponse("Request body is required"));
 
-            if (string.IsNullOrWhiteSpace(request.Code))
-                return BadRequest(ApiResponse.ErrorResponse("Resource name is required"));
+            if (string.IsNullOrWhiteSpace(request.ResourceCode))
+                return BadRequest(ApiResponse.ErrorResponse("Resource code is required"));
 
-            if (request.TenantId != null && request.TenantId != tenantId)
-                return BadRequest(ApiResponse.ErrorResponse("TenantId into url and into request does not match"));
-            request.TenantId = tenantId;
+            request.TenantCode = tenant;
 
             var createResult = await dbCommand.CreateResourceAsync(request);
 
@@ -112,22 +109,22 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
     }
 
 
-    [HttpDelete("{id:long}")]
-    public async ValueTask<ActionResult<ApiResponse>> DeleteOne(long tenantId, long id)
-    {
-        try
-        {
-            // Create the resource (assuming IDatabaseCommand interface exists)
-            var res = await dbCommand.DeleteResourceAsync(tenantId, id);
+    // [HttpDelete("{id:long}")]
+    // public async ValueTask<ActionResult<ApiResponse>> DeleteOne(long tenantId, long id)
+    // {
+    //     try
+    //     {
+    //         // Create the resource (assuming IDatabaseCommand interface exists)
+    //         var res = await dbCommand.DeleteResourceAsync(tenantId, id);
 
-            if (res.IsError)
-                return BadRequest(ApiResponse.ErrorResponse(res.QueryError?.errorMessage ?? "Failed to delete resource"));
+    //         if (res.IsError)
+    //             return BadRequest(ApiResponse.ErrorResponse(res.QueryError?.errorMessage ?? "Failed to delete resource"));
 
-            return Ok(ApiResponse.Empty());
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ApiResponse.ErrorResponse($"Internal server error: {ex.Message}"));
-        }
-    }
+    //         return Ok(ApiResponse.Empty());
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         return StatusCode(500, ApiResponse.ErrorResponse($"Internal server error: {ex.Message}"));
+    //     }
+    // }
 }

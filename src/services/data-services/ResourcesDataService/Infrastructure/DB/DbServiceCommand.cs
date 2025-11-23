@@ -36,27 +36,29 @@ public class DbServiceCommand(
     /// <returns>A QueryResponse containing the ID of the created resource.</returns>
     public async ValueTask<QueryResponse<long>> CreateResourceGroupAsync(CreateResourceGroupRequest request)
     {
-        try
-        {
-            using var rctx = await resourceContextFactory.CreateDbContextAsync();
+        try {
+        // {
+        //     using var rctx = await resourceContextFactory.CreateDbContextAsync();
 
-            // getting exact time for transaction
-            var localSystemNow = DateTimeOffset.UtcNow;
-            var group = new ResourceGroup
-            {
-                Code = request.Name,
-                Description = request.Description,
-                TenantId = request.TenantId!.Value,
-                UtcCreated = localSystemNow
-            };
-            await rctx.ResourceGroups.AddAsync(group);
+        //     // getting exact time for transaction
+        //     var localSystemNow = DateTimeOffset.UtcNow;
+        //     // resource group creation
+        //     var group = new ResourceGroup
+        //     {
+        //         ResourceGroupCode = request.Code,
+        //         Description = request.Description,
+        //         TenantId = request.TenantId!.Value,
+        //         UtcCreated = localSystemNow
+        //     };
+        //     await rctx.ResourceGroups.AddAsync(group);
 
-            await rctx.SaveChangesAsync();
+        //     await rctx.SaveChangesAsync();
 
-            var resp = new QueryResponse<long> { Results = group.Id };
+            // var resp = new QueryResponse<long> { Results = group.Id };
+            var resp = new QueryResponse<long> { Results = 1L };
             resp.Metadata.RowsInserted = 1;
 
-            return resp;
+            return await Task.FromResult(resp);
         }
         catch (Exception ex)
         {
@@ -70,7 +72,7 @@ public class DbServiceCommand(
     /// </summary>
     /// <param name="request">The request containing resource creation details.</param>
     /// <returns>A QueryResponse containing the ID of the created resource.</returns>
-    public async ValueTask<QueryResponse<long>> CreateResourceAsync(CreateResourceRequest request)
+    public async ValueTask<QueryResponse<string>> CreateResourceAsync(CreateResourceRequest request)
     {
         try
         {
@@ -82,58 +84,52 @@ public class DbServiceCommand(
             // resource creation
             var resource = new Resource
             {
-                Code = request.Code,
-                TenantId = request.TenantId!.Value,
+                ResourceCode = request.ResourceCode!,
+                TenantCode = request.TenantCode!,
                 Description = request.Description,
-                ResourceTypeId = request.ResourceTypeId,
-                UtcCreated = localSystemNow
+                Name = request.Name,
+                UtcCreated = localSystemNow,
+                Metadata = (request.Metadata != null) ? System.Text.Json.JsonSerializer.Serialize(request.Metadata) : null
             };
             await rctx.Resources.AddAsync(resource);
 
             await rctx.SaveChangesAsync();            
 
             // if resource group is provided, check if it exists and belongs to the tenant
-            if (request.ResourceGroupId.HasValue)
+            if (request.ResourceGroupCode != null)
             {
+                var wellFormattedCode = request.ResourceGroupCode.Trim().ToLower();
                 var group = await rctx.ResourceGroups
-                    .FirstOrDefaultAsync(g => g.Id == request.ResourceGroupId.Value && g.TenantId == request.TenantId.Value);
+                    .FirstOrDefaultAsync(g => 
+                                        g.TenantCode == request.TenantCode 
+                                        && g.ResourceGroupCode.ToLower() == wellFormattedCode
+                                        );
                 if (group == null)
                 {
-                    return new QueryResponse<long>
+                    return new QueryResponse<string>
                     {
-                        QueryError = new Error("Resource group not found or does not belong to the tenant.", ErrorCodes.ValuesNotFound)
+                        QueryError = new Error($"Resource group {request.ResourceGroupCode} not found or does not belong to the tenant.", ErrorCodes.ValuesNotFound)
                     };
                 }
 
                 // add resource to the group
-                await rctx.ResourceResourceGroups.AddAsync(new ResourceResourceGroup
+                await rctx.ResourceToGroups.AddAsync(new ResourceToGroup
                 {
-                    ResourceGroupId = group.Id,
-                    ResourceId = resource.Id,
-                    TenantId = request.TenantId.Value,
+                    ResourceId = resource.ResourceId,
+                    TenantCode = request.TenantCode!,
+                    ResourceGroupId = group.ResourceGroupId,
                     UtcCreated = localSystemNow
                 });
             }
 
-            // generate event status for the new resource
-            var initialStatus = new ResourceEventStore
-            {
-                ResourceId = resource.Id,
-                ResourceStatusId = 1,
-                TenantId = request.TenantId.Value,
-                Notes = "Initial status upon creation",
-                UtcCreated = localSystemNow
-            };
-            await rctx.ResourceEventStores.AddAsync(initialStatus);
-
             await rctx.SaveChangesAsync();
 
-            return new QueryResponse<long> { Results = resource.Id };
+            return new QueryResponse<string> { Results = resource.ResourceCode };
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error creating resource");
-            return new QueryResponse<long> { QueryError = new Error(ex.Message, ErrorCodes.GenericError) };
+            return new QueryResponse<string> { QueryError = new Error(ex.Message, ErrorCodes.GenericError) };
         }
     }
 
@@ -146,44 +142,44 @@ public class DbServiceCommand(
     {
         try
         {
-            using var rctx = await resourceContextFactory.CreateDbContextAsync();
+            // using var rctx = await resourceContextFactory.CreateDbContextAsync();
 
-            // getting exact time for transaction
-            var localSystemNow = DateTimeOffset.UtcNow;
+            // // getting exact time for transaction
+            // var localSystemNow = DateTimeOffset.UtcNow;
 
-            var res = await rctx.Resources.FirstOrDefaultAsync(r => r.Id == id && r.TenantId == tenantId);
-            if (res == null)
-            {
-                return new QueryResponse<long>
-                {
-                    QueryError = new Error($"Resource not found tenantId {tenantId} id {id}.", ErrorCodes.ValuesNotFound)
-                };
-            }
+            // var res = await rctx.Resources.FirstOrDefaultAsync(r => r.Id == id && r.TenantId == tenantId);
+            // if (res == null)
+            // {
+            //     return new QueryResponse<long>
+            //     {
+            //         QueryError = new Error($"Resource not found tenantId {tenantId} id {id}.", ErrorCodes.ValuesNotFound)
+            //     };
+            // }
 
-            // remove resource from groups
-            var resourceGroups = rctx.ResourceResourceGroups.Where(rrg => rrg.ResourceId == res.Id);
-            rctx.ResourceResourceGroups.RemoveRange(resourceGroups);
+            // // remove resource from groups
+            // var resourceGroups = rctx.ResourceResourceGroups.Where(rrg => rrg.ResourceId == res.Id);
+            // rctx.ResourceResourceGroups.RemoveRange(resourceGroups);
 
-            // add deletions to resource status history
-            await rctx.ResourceEventStores.AddAsync(new ResourceEventStore
-            {
-                ResourceId = res.Id,
-                ResourceStatusId = 3, // assuming 3 is the 'deleted' status
-                TenantId = res.TenantId,
-                // print resource delete values as JSON
-                Notes = System.Text.Json.JsonSerializer.Serialize(res),
-                UtcCreated = localSystemNow
-            });
+            // // add deletions to resource status history
+            // await rctx.ResourceEventStores.AddAsync(new ResourceEventStore
+            // {
+            //     ResourceId = res.Id,
+            //     ResourceStatusId = 3, // assuming 3 is the 'deleted' status
+            //     TenantId = res.TenantId,
+            //     // print resource delete values as JSON
+            //     Notes = System.Text.Json.JsonSerializer.Serialize(res),
+            //     UtcCreated = localSystemNow
+            // });
 
-            // remove the resource
-            rctx.Resources.Remove(res);
+            // // remove the resource
+            // rctx.Resources.Remove(res);
 
-            await rctx.SaveChangesAsync();
+            // await rctx.SaveChangesAsync();
 
-            var resp = new QueryResponse<long> { Results = res.Id };
+            var resp = new QueryResponse<long> { Results = 0 };
             resp.Metadata.RowsDeleted = 1;
 
-            return resp;    
+            return await Task.FromResult(resp);    
         }
         catch (Exception ex)
         {

@@ -1,4 +1,6 @@
-﻿namespace ResourcesManager.Business.DataModel.Resources;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ResourcesManager.Business.DataModel.Resources;
 
 /// <summary>
 /// Resource Type def
@@ -15,12 +17,12 @@ public class ResourceType
     /// Tenant Code part of the Entity primary key
     /// </summary>
     [Column("tenant_code")]
-    public string TenantCode { get; set; }
+    public required string TenantCode { get; set; }
     /// <summary>
     /// Code part of the Entity primary key
     /// </summary>
     [Column("resourcetype_code")]
-    public string ResourceTypeCode { get; set; }
+    public required string ResourceTypeCode { get; set; }
     /// <summary>
     /// Mnemonic name of the Resource Type
     /// </summary>

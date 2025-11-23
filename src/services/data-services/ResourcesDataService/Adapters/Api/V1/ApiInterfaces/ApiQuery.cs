@@ -8,22 +8,21 @@ public class ApiQuery()
     /// <summary>
     /// Search with a list of Resource codes
     /// </summary>
-    public string[]? Ids { get; set; }
+    public string[]? ResourceCode { get; set; }
     /// <summary>
-    /// Code startsWith
+    /// Name startsWith
     /// </summary>
-    public string? StartsWith { get; set; }
+    public string? NameStartsWith { get; set; }
     /// <summary>
     /// Resource has typeId
     /// </summary>
-    public string[]? ResourceTypeId { get; set; }
+    public string[]? ResourceTypeCode { get; set; }
     /// <summary>
     /// resource is in the group
     /// </summary>
-    public string[]? ResourceGroupId { get; set; }
+    public string[]? ResourceGroupCode { get; set; }
     /// <summary>
     /// by status
     /// </summary>
-    public string[]? ResourceStatusId { get; set; }
-
+    public string[]? ResourceStatusCode { get; set; }
 }

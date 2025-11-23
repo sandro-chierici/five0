@@ -1,4 +1,6 @@
-﻿namespace ResourcesManager.Business.DataModel.Resources;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ResourcesManager.Business.DataModel.Resources;
 
 /// <summary>
 /// Resource Group
@@ -10,10 +12,10 @@ public class ResourceGroup
     public long ResourceGroupId { get; set; }
 
     [Column("tenant_code")]
-    public string TenantCode { get; set; }
+    public required string TenantCode { get; set; }
 
     [Column("resourcegroup_code")]
-    public string ResourceGroupCode { get; set; }
+    public required string ResourceGroupCode { get; set; }
 
     [Column("name")]
     public string? Name { get; set; }
@@ -26,4 +28,8 @@ public class ResourceGroup
 
     [Column("utc_created")]
     public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;
+    
+    [Column("parent_resourcegroup_id")]
+    public long? ParentResourceGroupId { get; set; }
+    public bool IsRootGroup() => ParentResourceGroupId == null;
 }

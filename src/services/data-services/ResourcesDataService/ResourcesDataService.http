@@ -1,29 +1,28 @@
-@ResourceManager_HostAddress = http://localhost:5000
+@ResourceManager_HostAddress = http://localhost:6085
 
 ###
-GET {{ResourceManager_HostAddress}}/api/v1/tenant/1/resources/1
+GET {{ResourceManager_HostAddress}}/api/v1/tenant/GLOBAL/resources/RES001
 Accept: application/json
 
 ###
-POST {{ResourceManager_HostAddress}}/api/v1/tenant/1/resources/_search
+POST {{ResourceManager_HostAddress}}/api/v1/tenant/GLOBAL/resources/_search
 Accept: application/json
 Content-Type: application/json
 
 {
-    "resourceTypeId": [1,2,3,4,5,6,7,8,9,10]
+    "resourceCode": ["RES001","RES002","RES003","RES004","RES005","RES006","RES007","RES008","RES009","RES010"]
 }
 
 ###
-POST {{ResourceManager_HostAddress}}/api/v1/tenant/1/resources
+POST {{ResourceManager_HostAddress}}/api/v1/tenant/GLOBAL/resources
 Accept: application/json
 Content-Type: application/json
 
 {
-    "code": "created-12",
-    "tenantId": 1,
-    "description": "test-case",
-    "resourceTypeId": 1,
-    "resourceGroupId": 1
+    "resourceCode": "RES002",
+    "name": "Resource 1",
+    "description": "Resource 2",
+    "resourceGroupCode": "MAIN_GROUP"
 }
 
 ###

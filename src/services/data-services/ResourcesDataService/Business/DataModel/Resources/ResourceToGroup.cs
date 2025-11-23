@@ -1,4 +1,6 @@
-﻿namespace ResourcesManager.Business.DataModel.Resources;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ResourcesManager.Business.DataModel.Resources;
 
 [Table("resource_to_group")]
 public class ResourceToGroup
@@ -7,7 +9,7 @@ public class ResourceToGroup
     public long ResourceToGroupId { get; set; }
 
     [Column("tenant_code")]
-    public string TenantCode { get; set; }
+    public required string TenantCode { get; set; }
 
     [Column("resource_id")]
     public long ResourceId  { get; set; }

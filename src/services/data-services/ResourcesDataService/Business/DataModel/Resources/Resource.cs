@@ -1,4 +1,6 @@
-﻿namespace ResourcesManager.Business.DataModel.Resources;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ResourcesManager.Business.DataModel.Resources;
 
 /// <summary>
 /// Resource Data Model
@@ -13,10 +15,10 @@ public class Resource
     public long ResourceId { get; set; }
 
     [Column("resource_code")]
-    public string ResourceCode { get; set; }    
+    public required string ResourceCode { get; set; }    
 
     [Column("tenant_code")]
-    public string TenantCode { get; set; }
+    public required string TenantCode { get; set; }
 
     [Column("resourcetype_id")]
     public long? ResourceTypeId { get; set; }

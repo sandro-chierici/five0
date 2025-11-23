@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ResourcesManager.Business.DataModel.Resources;
 
 // History class for tracking status changes
@@ -7,7 +9,7 @@ public class ResourceEvent
     [Column("resourceevent_id")]
     public long ResourceEventId { get; set; }
     [Column("tenant_code")]
-    public string TenantCode { get; set; }
+    public required string TenantCode { get; set; }
     [Column("resource_id")]
     public long ResourceId { get; set; }
     [Column("resourcestatus_id")]

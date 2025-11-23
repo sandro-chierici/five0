@@ -10,8 +10,8 @@ public interface IDatabaseQuery
         Expression<Func<Resource, bool>> filter,
         int limit = ResourceRules.ResourcesQueryLimit);
 
-    ValueTask<QueryResponse<List<ResourceView>>> GetResourcesByGroupAsync(
-        Expression<Func<ResourceGroup, bool>> filter,
-        int limit = ResourceRules.ResourcesQueryLimit);        
+    // ValueTask<QueryResponse<List<ResourceView>>> GetResourcesByGroupAsync(
+    //     Expression<Func<ResourceGroup, bool>> filter,
+    //     int limit = ResourceRules.ResourcesQueryLimit);        
      
 }
