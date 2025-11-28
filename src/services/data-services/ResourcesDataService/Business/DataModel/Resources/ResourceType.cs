@@ -12,12 +12,12 @@ public class ResourceType
     /// Database Primary key
     /// </summary>
     [Column("resourcetype_id")]
-    public long ResourceTypeId { get; set; }
+    public required string ResourceTypeId { get; set; }
     /// <summary>
     /// Tenant Code part of the Entity primary key
     /// </summary>
-    [Column("tenant_code")]
-    public required string TenantCode { get; set; }
+    [Column("tenant_id")]
+    public required string TenantId { get; set; }
     /// <summary>
     /// Code part of the Entity primary key
     /// </summary>
@@ -39,10 +39,10 @@ public class ResourceType
     [Column("metadata")]
     public string? Metadata { get; set; }
     /// <summary>
-    /// Parent Resource Type Code
+    /// Parent Resource Type Id
     /// </summary>
     [Column("parent_resourcetype_id")]
-    public long? ParentResourceTypeId { get; set; }
+    public string? ParentResourceTypeId { get; set; }
 
     [Column("utc_created")]
     public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;

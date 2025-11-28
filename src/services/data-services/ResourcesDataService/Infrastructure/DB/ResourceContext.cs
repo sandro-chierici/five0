@@ -22,9 +22,11 @@ public class ResourceContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Resource>().HasKey(e => e.ResourceId);
-        modelBuilder.Entity<Resource>().Property(e => e.ResourceId).ValueGeneratedOnAdd();
-        modelBuilder.Entity<Resource>().HasIndex(e => e.TenantCode);
-        modelBuilder.Entity<Resource>().HasIndex(e => new { e.TenantCode, e.ResourceCode }).IsUnique();
+        modelBuilder.Entity<Resource>().Property(e => e.ResourceId).HasColumnType("uuid");
+        modelBuilder.Entity<Resource>().Property(e => e.TenantId).HasColumnType("uuid");
+        modelBuilder.Entity<Resource>().Property(e => e.ResourceTypeId).HasColumnType("uuid");
+        modelBuilder.Entity<Resource>().HasIndex(e => e.TenantId);
+        modelBuilder.Entity<Resource>().HasIndex(e => new { e.TenantId, e.ResourceCode }).IsUnique();
         modelBuilder.Entity<Resource>()
         .HasOne<ResourceType>()
         .WithMany()

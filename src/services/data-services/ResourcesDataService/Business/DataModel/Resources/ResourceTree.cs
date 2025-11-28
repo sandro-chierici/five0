@@ -8,17 +8,20 @@ namespace ResourcesManager.Business.DataModel.Resources;
 [Table("resource_tree")]
 public class ResourceTree
 {
+    /// <summary>
+    /// Not exposed autoincremented primary key
+    /// </summary>
     [Column("resourcetree_id")]
     public long ResourceTreeId { get; set; }
 
-    [Column("tenant_code")]
-    public required string TenantCode { get; set; }
+    [Column("tenant_id")]
+    public required string TenantId { get; set; }
 
     [Column("parent_resource_id")]
-    public long ParentResourceId { get; set; }
+    public required string ParentResourceId { get; set; }
 
     [Column("child_resource_id")]
-    public long ChildResourceId { get; set; }
+    public required string ChildResourceId { get; set; }
 
     [Column("utc_created")]
     public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;

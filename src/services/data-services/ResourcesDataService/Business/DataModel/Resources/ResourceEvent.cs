@@ -6,14 +6,17 @@ namespace ResourcesManager.Business.DataModel.Resources;
 [Table("resource_event")]
 public class ResourceEvent
 {
+    /// <summary>
+    /// Here the key is autoincremented long because we do not need to expose this Id outside of the system
+    /// </summary>
     [Column("resourceevent_id")]
     public long ResourceEventId { get; set; }
-    [Column("tenant_code")]
-    public required string TenantCode { get; set; }
+    [Column("tenant_id")]
+    public required string TenantId { get; set; }
     [Column("resource_id")]
-    public long ResourceId { get; set; }
+    public required string ResourceId { get; set; }
     [Column("resourcestatus_id")]
-    public long ResourceStatusId { get; set; }
+    public required string ResourceStatusId { get; set; }
     [Column("utc_event")]
     public DateTimeOffset? UtcEvent { get; set; } = DateTimeOffset.UtcNow;
     [Column("message")]
