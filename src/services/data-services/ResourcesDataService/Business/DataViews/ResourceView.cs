@@ -17,7 +17,7 @@ public record struct ResourceGroupView(string? ResourceGroupCode, string? Descri
 public record ResourceView()
 {
     public string? ResourceCode { get; set; }
-    public string? TenantCode { get; init; }
+    public string? TenantId { get; init; }
     public string? Name { get; init; }
     public string? Description { get; init; }
     public ResourceTypeView? ResourceType { get; init; }

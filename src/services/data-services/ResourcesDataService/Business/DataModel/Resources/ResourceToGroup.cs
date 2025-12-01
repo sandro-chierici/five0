@@ -9,13 +9,13 @@ public class ResourceToGroup
     public long ResourceToGroupId { get; set; }
 
     [Column("tenant_id")]
-    public required string TenantId { get; set; }
+    public required Guid TenantId { get; set; }
 
     [Column("resource_id")]
-    public required string ResourceId  { get; set; }
+    public required Guid ResourceId  { get; set; }
 
     [Column("resourcegroup_id")]
-    public required string ResourceGroupId { get; set; }
+    public required Guid ResourceGroupId { get; set; }
     
     [Column("utc_created")]
     public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;

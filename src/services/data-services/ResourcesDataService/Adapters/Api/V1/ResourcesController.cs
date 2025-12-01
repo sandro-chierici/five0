@@ -5,7 +5,7 @@ using ResourcesManager.Business.DataViews;
 
 namespace ResourcesManager.Adapters.Api.V1;
 
-[Route("api/v1/tenant/{tenant:required}/resources")]
+[Route("api/v1/tenant/{tenantId:required}/resources")]
 [ApiController]
 public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbCommand) : ControllerBase
 {
@@ -13,14 +13,16 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
     /// Single resource
     /// </summary>
     /// <param name="tenant"></param>
-    /// <param name="resource"></param>
+    /// <param name="resourceCode"></param>
     /// <returns></returns>
-    [HttpGet("{resource:required}")]
-    public async ValueTask<ActionResult<ApiResponse>> FindOne(string tenant, string resource)
+    [HttpGet("{resourceCode:required}")]
+    public async ValueTask<ActionResult<ApiResponse>> FindOne(string tenantId, string resourceCode)
     {
+        // var resource = resourceCode.Normalized();
         var resp = await dbQuery.GetResourcesAsync(res => 
-            res.ResourceCode == resource && res.TenantCode == tenant);
-
+            res.ResourceCode == resourceCode 
+            && res.TenantId.ToString() == tenantId
+            );
         if (resp.IsError)
             return BadRequest(ApiResponse.ErrorResponse(resp.QueryError?.errorMessage ?? "Request Error"));
 
@@ -32,7 +34,7 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
     /// </summary>
     /// <param name="value"></param>
     [HttpPost("_search")]
-    public async ValueTask<ActionResult<ApiResponse>> Search([FromBody] ApiQuery query, string tenant)
+    public async ValueTask<ActionResult<ApiResponse>> Search([FromBody] ApiQuery query, string tenantId)
     {
         // inner func to evalueate query
         async ValueTask<QueryResponse<List<ResourceView>>> evaluateQuery(ApiQuery q) =>
@@ -41,14 +43,17 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
                 // get a sequence of ids
                 { ResourceCode: not null } and { ResourceCode.Length: > 0 } =>
                 await dbQuery.GetResourcesAsync(
-                    resource => resource.TenantCode == tenant && q.ResourceCode.Contains(resource.ResourceCode)),
+                    resource => resource.TenantId.ToString() == tenantId && 
+                    q.ResourceCode.Contains(resource.ResourceCode)
+                    ),
 
                 // get by name
                 { NameStartsWith: not null } and { NameStartsWith.Length: > 0 } =>
                 await dbQuery.GetResourcesAsync(
                     resource =>
-                    resource.TenantCode == tenant &&
-                    resource.ResourceCode.ToLower().StartsWith(q.NameStartsWith.ToLower())),
+                    resource.TenantId.ToString() == tenantId &&
+                    resource.ResourceCode.ToLower().Trim().StartsWith(q.NameStartsWith.ToLower().Trim())
+                    ),
 
                 // // get by typeid
                 // { ResourceTypeCode: not null } and { ResourceTypeCode.Length: > 0 } =>
@@ -82,7 +87,7 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost]
-    public async ValueTask<ActionResult<ApiResponse>> CreateOne(string tenant, [FromBody] CreateResourceRequest request)
+    public async ValueTask<ActionResult<ApiResponse>> CreateOne(string tenantId, [FromBody] CreateResourceRequest request)
     {
         try
         {
@@ -93,7 +98,7 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
             if (string.IsNullOrWhiteSpace(request.ResourceCode))
                 return BadRequest(ApiResponse.ErrorResponse("Resource code is required"));
 
-            request.TenantCode = tenant;
+            request.TenantId = tenantId;
 
             var createResult = await dbCommand.CreateResourceAsync(request);
 

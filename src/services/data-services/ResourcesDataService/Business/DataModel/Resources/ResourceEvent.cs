@@ -12,11 +12,11 @@ public class ResourceEvent
     [Column("resourceevent_id")]
     public long ResourceEventId { get; set; }
     [Column("tenant_id")]
-    public required string TenantId { get; set; }
+    public required Guid TenantId { get; set; }
     [Column("resource_id")]
-    public required string ResourceId { get; set; }
+    public required Guid ResourceId { get; set; }
     [Column("resourcestatus_id")]
-    public required string ResourceStatusId { get; set; }
+    public required Guid ResourceStatusId { get; set; }
     [Column("utc_event")]
     public DateTimeOffset? UtcEvent { get; set; } = DateTimeOffset.UtcNow;
     [Column("message")]

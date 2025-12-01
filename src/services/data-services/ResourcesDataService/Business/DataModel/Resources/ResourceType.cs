@@ -12,12 +12,12 @@ public class ResourceType
     /// Database Primary key
     /// </summary>
     [Column("resourcetype_id")]
-    public required string ResourceTypeId { get; set; }
+    public required Guid ResourceTypeId { get; set; }
     /// <summary>
     /// Tenant Code part of the Entity primary key
     /// </summary>
     [Column("tenant_id")]
-    public required string TenantId { get; set; }
+    public required Guid TenantId { get; set; }
     /// <summary>
     /// Code part of the Entity primary key
     /// </summary>
@@ -42,7 +42,7 @@ public class ResourceType
     /// Parent Resource Type Id
     /// </summary>
     [Column("parent_resourcetype_id")]
-    public string? ParentResourceTypeId { get; set; }
+    public Guid? ParentResourceTypeId { get; set; }
 
     [Column("utc_created")]
     public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;

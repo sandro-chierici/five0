@@ -15,13 +15,13 @@ public class ResourceTree
     public long ResourceTreeId { get; set; }
 
     [Column("tenant_id")]
-    public required string TenantId { get; set; }
+    public required Guid TenantId { get; set; }
 
     [Column("parent_resource_id")]
-    public required string ParentResourceId { get; set; }
+    public required Guid ParentResourceId { get; set; }
 
     [Column("child_resource_id")]
-    public required string ChildResourceId { get; set; }
+    public required Guid ChildResourceId { get; set; }
 
     [Column("utc_created")]
     public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;

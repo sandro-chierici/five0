@@ -9,10 +9,10 @@ namespace ResourcesManager.Business.DataModel.Resources;
 public class ResourceGroup
 {
     [Column("resourcegroup_id")]
-    public required string ResourceGroupId { get; set; }
+    public required Guid ResourceGroupId { get; set; }
 
     [Column("tenant_id")]
-    public required string TenantId { get; set; }
+    public required Guid TenantId { get; set; }
 
     [Column("resourcegroup_code")]
     public required string ResourceGroupCode { get; set; }
@@ -30,6 +30,6 @@ public class ResourceGroup
     public DateTimeOffset? UtcCreated { get; set; } = DateTimeOffset.UtcNow;
     
     [Column("parent_resourcegroup_id")]
-    public string? ParentResourceGroupId { get; set; }
+    public Guid? ParentResourceGroupId { get; set; }
     public bool IsRootGroup() => ParentResourceGroupId == null;
 }

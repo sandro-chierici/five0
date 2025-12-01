@@ -44,9 +44,9 @@ public class DbServiceQuery(
 
             // get all groups in a separate query
             var grps = (from rv in resources
-                        join rrg in resourceCtx.ResourceToGroups
-                        on new { rv.Resource.TenantCode, rv.Resource.ResourceId } equals new { rrg.TenantCode, rrg.ResourceId }
-                        join rg in resourceCtx.ResourceGroups on new { rrg.TenantCode, rrg.ResourceGroupId } equals new { rg.TenantCode, rg.ResourceGroupId }
+                        join rtg in resourceCtx.ResourceToGroups
+                        on rv.Resource.ResourceId equals rtg.ResourceId
+                        join rg in resourceCtx.ResourceGroups on rtg.ResourceGroupId equals rg.ResourceGroupId
                         select new
                         {
                             rv.Resource,
@@ -72,7 +72,7 @@ public class DbServiceQuery(
             var data = resources.Select(r => new ResourceView
             {
                 ResourceCode = r.Resource.ResourceCode,
-                TenantCode = r.Resource.TenantCode,
+                TenantId = r.Resource.TenantId.ToString(),
                 Name = r.Resource.Name,
                 Description = r.Resource.Description,
                 ResourceType = new ResourceTypeView
@@ -88,12 +88,12 @@ public class DbServiceQuery(
                 //     sts.Where(s => s.ResourceId == r.Resource.Id && s.TenantId == r.Resource.TenantId)
                 //     .FirstOrDefault()?.Status.Description),
                 ResourceGroups = grps
-                    .Where(gr => gr.Resource.ResourceId == r.Resource.ResourceId &&
-                                 gr.Resource.TenantCode == r.Resource.TenantCode)
+                    .Where(gr => gr.Resource.ResourceId == r.Resource.ResourceId)
                     .Select(g => new ResourceGroupView(g.Group.ResourceGroupCode, g.Group.Description))
                     .ToList(),
-                Metadata = r.Resource.Metadata != null ? 
-                            System.Text.Json.JsonSerializer.Deserialize<object>(r.Resource.Metadata) : null
+                Metadata = r.Resource.Metadata != null ?
+                            System.Text.Json.JsonSerializer.Deserialize<object>(r.Resource.Metadata) :
+                            null
             })
             .ToList();
 

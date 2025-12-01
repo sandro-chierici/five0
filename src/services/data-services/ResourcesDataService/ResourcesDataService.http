@@ -1,11 +1,11 @@
 @ResourceManager_HostAddress = http://localhost:6085
 
 ###
-GET {{ResourceManager_HostAddress}}/api/v1/tenant/GLOBAL/resources/RES001
+GET {{ResourceManager_HostAddress}}/api/v1/tenant/019adae9-ad3b-7ae5-8719-3c30b308aacb/resources/RES002
 Accept: application/json
 
 ###
-POST {{ResourceManager_HostAddress}}/api/v1/tenant/GLOBAL/resources/_search
+POST {{ResourceManager_HostAddress}}/api/v1/tenant/019adae9-ad3b-7ae5-8719-3c30b308aacb/resources/_search
 Accept: application/json
 Content-Type: application/json
 
@@ -14,7 +14,7 @@ Content-Type: application/json
 }
 
 ###
-POST {{ResourceManager_HostAddress}}/api/v1/tenant/GLOBAL/resources
+POST {{ResourceManager_HostAddress}}/api/v1/tenant/019adae9-ad3b-7ae5-8719-3c30b308aacb/resources
 Accept: application/json
 Content-Type: application/json
 

@@ -13,10 +13,10 @@ public class ResourceStatus
     /// Database Primary key
     /// </summary>
     [Column("resourcestatus_id")]
-    public required string ResourceStatusId { get; set; }
+    public required Guid ResourceStatusId { get; set; }
 
     [Column("tenant_id")]
-    public required string TenantId { get; set; }
+    public required Guid TenantId { get; set; }
 
     [Column("resourcestatus_code")]
     public required string ResourceStatusCode { get; set; }

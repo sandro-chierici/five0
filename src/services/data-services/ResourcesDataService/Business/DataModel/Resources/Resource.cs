@@ -15,22 +15,22 @@ public class Resource
     /// Database primary key
     /// </summary>
     [Column("resource_id")]
-    public required string ResourceId { get; set; } 
+    public required Guid ResourceId { get; set; } 
     /// <summary>
     /// Tenant 
     /// </summary>
     [Column("tenant_id")]
-    public required string TenantId { get; set; }
+    public required Guid TenantId { get; set; }
+    /// <summary>
+    /// Resource Type Id        
+    /// </summary>
+    [Column("resourcetype_id")]
+    public Guid? ResourceTypeId { get; set; }    
     /// <summary>
     /// Tenant scoped unique code of the Resource 
     /// </summary>
     [Column("resource_code")]
     public required string ResourceCode { get; set; }    
-    /// <summary>
-    /// Resource Type Id        
-    /// </summary>
-    [Column("resourcetype_id")]
-    public string? ResourceTypeId { get; set; }
     /// <summary>
     /// Mnemonic name of the Resource 
     /// (searchable, not unique)

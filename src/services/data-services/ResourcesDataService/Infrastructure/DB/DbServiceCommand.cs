@@ -36,23 +36,24 @@ public class DbServiceCommand(
     /// <returns>A QueryResponse containing the ID of the created resource.</returns>
     public async ValueTask<QueryResponse<long>> CreateResourceGroupAsync(CreateResourceGroupRequest request)
     {
-        try {
-        // {
-        //     using var rctx = await resourceContextFactory.CreateDbContextAsync();
+        try
+        {
+            // {
+            //     using var rctx = await resourceContextFactory.CreateDbContextAsync();
 
-        //     // getting exact time for transaction
-        //     var localSystemNow = DateTimeOffset.UtcNow;
-        //     // resource group creation
-        //     var group = new ResourceGroup
-        //     {
-        //         ResourceGroupCode = request.Code,
-        //         Description = request.Description,
-        //         TenantId = request.TenantId!.Value,
-        //         UtcCreated = localSystemNow
-        //     };
-        //     await rctx.ResourceGroups.AddAsync(group);
+            //     // getting exact time for transaction
+            //     var localSystemNow = DateTimeOffset.UtcNow;
+            //     // resource group creation
+            //     var group = new ResourceGroup
+            //     {
+            //         ResourceGroupCode = request.Code,
+            //         Description = request.Description,
+            //         TenantId = request.TenantId!.Value,
+            //         UtcCreated = localSystemNow
+            //     };
+            //     await rctx.ResourceGroups.AddAsync(group);
 
-        //     await rctx.SaveChangesAsync();
+            //     await rctx.SaveChangesAsync();
 
             // var resp = new QueryResponse<long> { Results = group.Id };
             var resp = new QueryResponse<long> { Results = 1L };
@@ -81,11 +82,14 @@ public class DbServiceCommand(
             // getting exact time for transaction
             var localSystemNow = DateTimeOffset.UtcNow;
 
+            var tenant = Guid.Parse(request.TenantId!);
+
             // resource creation
             var resource = new Resource
             {
+                ResourceId = ResourceRules.GetNewPK(),
                 ResourceCode = request.ResourceCode!,
-                TenantCode = request.TenantCode!,
+                TenantId = tenant,
                 Description = request.Description,
                 Name = request.Name,
                 UtcCreated = localSystemNow,
@@ -93,16 +97,16 @@ public class DbServiceCommand(
             };
             await rctx.Resources.AddAsync(resource);
 
-            await rctx.SaveChangesAsync();            
+            await rctx.SaveChangesAsync();
 
             // if resource group is provided, check if it exists and belongs to the tenant
             if (request.ResourceGroupCode != null)
             {
-                var wellFormattedCode = request.ResourceGroupCode.Trim().ToLower();
+                var wellFormattedCode = request.ResourceGroupCode.Normalized()!;
                 var group = await rctx.ResourceGroups
-                    .FirstOrDefaultAsync(g => 
-                                        g.TenantCode == request.TenantCode 
-                                        && g.ResourceGroupCode.ToLower() == wellFormattedCode
+                    .FirstOrDefaultAsync(g =>
+                                        g.TenantId == tenant
+                                        && g.ResourceGroupCode.Normalized() == wellFormattedCode
                                         );
                 if (group == null)
                 {
@@ -116,7 +120,7 @@ public class DbServiceCommand(
                 await rctx.ResourceToGroups.AddAsync(new ResourceToGroup
                 {
                     ResourceId = resource.ResourceId,
-                    TenantCode = request.TenantCode!,
+                    TenantId = tenant,
                     ResourceGroupId = group.ResourceGroupId,
                     UtcCreated = localSystemNow
                 });
@@ -179,7 +183,7 @@ public class DbServiceCommand(
             var resp = new QueryResponse<long> { Results = 0 };
             resp.Metadata.RowsDeleted = 1;
 
-            return await Task.FromResult(resp);    
+            return await Task.FromResult(resp);
         }
         catch (Exception ex)
         {
