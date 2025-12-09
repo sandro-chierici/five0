@@ -2,7 +2,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ResourcesManager.Business.DataModel.Resources;
 
-// History class for tracking status changes
+/// <summary>
+/// Resource Event, History class for tracking status changes
+/// </summary>
 [Table("resource_event")]
 public class ResourceEvent
 {

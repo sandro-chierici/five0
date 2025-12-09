@@ -7,7 +7,6 @@ public class CreateResourceRequest
 {
     public string? ResourceCode { get; set; }
     public string? TenantId { get; set; }
-    public string? Name { get; set; }
     public string? Description { get; set; }
     public string? ResourceTypeCode { get; set; }
     public string? ResourceGroupCode { get; set; }
@@ -20,7 +19,6 @@ public class CreateResourceRequest
 public class CreateResourceGroupRequest
 {
     public string? ResourceGroupCode { get; set; }
-    public string? Name { get; set; }
     public string? Description { get; set; }
     public string? ParentResourceGroupCode { get; set; }
     public object? Metadata { get; set; }

@@ -4,9 +4,6 @@ namespace ResourcesManager.Business.DataModel.Resources;
 
 /// <summary>
 /// Resource Data Model
-/// Id is the primary key in the database
-/// Resource URN (unique reference name) is the unique identifier for the resource for external World
-/// uniqueness consists of TenantId + ResourceCode
 /// </summary>
 [Table("resource")]
 public class Resource
@@ -27,16 +24,11 @@ public class Resource
     [Column("resourcetype_id")]
     public Guid? ResourceTypeId { get; set; }    
     /// <summary>
-    /// Tenant scoped unique code of the Resource 
-    /// </summary>
-    [Column("resource_code")]
-    public required string ResourceCode { get; set; }    
-    /// <summary>
     /// Mnemonic name of the Resource 
     /// (searchable, not unique)
     /// </summary>
-    [Column("name")]
-    public string? Name { get; set; }
+    [Column("resource_code")]
+    public string? ResourceCode { get; set; }
     /// <summary>
     /// Mnemonic name of the Resource
     /// </summary>

@@ -29,25 +29,26 @@ public static class ResourceRules
     /// <returns></returns>
     public static string GetNewTraceId() => $"{SourceName}:{Guid.NewGuid()}";
 
-    public static Guid GetNewPK() => Guid.CreateVersion7(DateTimeOffset.UtcNow);
-
-    public static string GetResourceUrn(string tenantId, string resourceCode) =>
-        $"urn:five0:resource:{tenantId}:{resourceCode}";
-    
-    public static string GetResourceGroupUrn(string tenantId, string resourceGroupCode) =>
-        $"urn:five0:resourcegroup:{tenantId}:{resourceGroupCode}";
-
-    public static string GetResourceTypeUrn(string tenantId, string resourceTypeCode) =>
-        $"urn:five0:resourcetype:{tenantId}:{resourceTypeCode}";
+    /// <summary>
+    /// Create a new PK using Guid version 7
+    /// </summary>
+    /// <returns></returns>
+    public static Guid CreatePK(DateTimeOffset? seed = null) => Guid.CreateVersion7(seed ?? DateTimeOffset.UtcNow);
 
     /// <summary>
     /// Normalize string input
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    public static string? Normalized(this string? input) =>
+    public static string? ToNormalForm(this string? input) =>
         input?.Trim().ToLower();
 
-    public static string NormalizedAndDefault(this string? input, string defaultValue = "") =>
-        string.IsNullOrWhiteSpace(input) ? defaultValue : input.Normalized()!;    
+    /// <summary>
+    /// Normalize string input or return default value
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public static string ToNormalFormOrDefault(this string? input, string defaultValue) =>
+        string.IsNullOrWhiteSpace(input?.Trim()) ? defaultValue : input.ToNormalForm()!;    
 }

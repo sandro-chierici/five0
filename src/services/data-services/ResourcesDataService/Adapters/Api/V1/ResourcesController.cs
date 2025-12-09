@@ -11,6 +11,7 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
 {
     /// <summary>
     /// Single resource
+    /// 
     /// </summary>
     /// <param name="tenant"></param>
     /// <param name="resourceCode"></param>

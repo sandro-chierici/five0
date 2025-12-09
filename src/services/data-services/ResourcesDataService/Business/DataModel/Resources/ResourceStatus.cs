@@ -9,20 +9,14 @@ namespace ResourcesManager.Business.DataModel.Resources;
 [Table("resource_status")]
 public class ResourceStatus
 {
-    /// <summary>
-    /// Database Primary key
-    /// </summary>
     [Column("resourcestatus_id")]
     public required Guid ResourceStatusId { get; set; }
 
     [Column("tenant_id")]
     public required Guid TenantId { get; set; }
 
-    [Column("resourcestatus_code")]
-    public required string ResourceStatusCode { get; set; }
-
-    [Column("name")]
-    public string? Name { get; set; }
+    [Column("status_code")]
+    public string? StatusCode { get; set; }
 
     [Column("description")] 
     public string? Description { get; set; }

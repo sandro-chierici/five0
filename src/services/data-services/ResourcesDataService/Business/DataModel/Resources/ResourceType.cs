@@ -3,7 +3,7 @@
 namespace ResourcesManager.Business.DataModel.Resources;
 
 /// <summary>
-/// Resource Type def
+/// Resource Type Data Model
 /// </summary>
 [Table("resource_type")]
 public class ResourceType
@@ -21,13 +21,8 @@ public class ResourceType
     /// <summary>
     /// Code part of the Entity primary key
     /// </summary>
-    [Column("resourcetype_code")]
-    public required string ResourceTypeCode { get; set; }
-    /// <summary>
-    /// Mnemonic name of the Resource Type
-    /// </summary>
-    [Column("name")]
-    public string? Name { get; set; }
+    [Column("type_code")]
+    public required string TypeCode { get; set; }
     /// <summary>
     /// Mnemonic description of the Resource Type
     /// </summary>

@@ -82,31 +82,28 @@ public class DbServiceCommand(
             // getting exact time for transaction
             var localSystemNow = DateTimeOffset.UtcNow;
 
-            var tenant = Guid.Parse(request.TenantId!);
+            var tenantId = ResourceRules.CreatePK(localSystemNow); // in real scenario, resolve tenant from request.TenantId
+            var resourceId = ResourceRules.CreatePK(localSystemNow);
 
             // resource creation
             var resource = new Resource
             {
-                ResourceId = ResourceRules.GetNewPK(),
+                ResourceId = resourceId,
                 ResourceCode = request.ResourceCode!,
-                TenantId = tenant,
+                TenantId = tenantId,
                 Description = request.Description,
-                Name = request.Name,
                 UtcCreated = localSystemNow,
                 Metadata = (request.Metadata != null) ? System.Text.Json.JsonSerializer.Serialize(request.Metadata) : null
             };
             await rctx.Resources.AddAsync(resource);
 
-            await rctx.SaveChangesAsync();
-
             // if resource group is provided, check if it exists and belongs to the tenant
             if (request.ResourceGroupCode != null)
             {
-                var wellFormattedCode = request.ResourceGroupCode.Normalized()!;
-                var group = await rctx.ResourceGroups
-                    .FirstOrDefaultAsync(g =>
-                                        g.TenantId == tenant
-                                        && g.ResourceGroupCode.Normalized() == wellFormattedCode
+                var wellFormattedCode = request.ResourceGroupCode.ToNormalForm()!;
+                var group = await rctx.ResourceGroups.FirstOrDefaultAsync(g =>
+                                        g.TenantId == tenantId
+                                        && g.GroupCode.ToNormalForm() == wellFormattedCode
                                         );
                 if (group == null)
                 {
@@ -119,8 +116,8 @@ public class DbServiceCommand(
                 // add resource to the group
                 await rctx.ResourceToGroups.AddAsync(new ResourceToGroup
                 {
-                    ResourceId = resource.ResourceId,
-                    TenantId = tenant,
+                    ResourceId = resourceId,
+                    TenantId = tenantId,
                     ResourceGroupId = group.ResourceGroupId,
                     UtcCreated = localSystemNow
                 });

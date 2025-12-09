@@ -14,11 +14,8 @@ public class ResourceGroup
     [Column("tenant_id")]
     public required Guid TenantId { get; set; }
 
-    [Column("resourcegroup_code")]
-    public required string ResourceGroupCode { get; set; }
-
-    [Column("name")]
-    public string? Name { get; set; }
+    [Column("group_code")]
+    public string? GroupCode { get; set; }
 
     [Column("description")]
     public string? Description { get; set; }

@@ -37,7 +37,7 @@ public class ResourceContext : DbContext
         modelBuilder.Entity<ResourceGroup>().Property(e => e.ResourceGroupId).HasColumnType("uuid");
         modelBuilder.Entity<ResourceGroup>().Property(e => e.TenantId).HasColumnType("uuid");
         modelBuilder.Entity<ResourceGroup>().HasIndex(e => e.TenantId);
-        modelBuilder.Entity<ResourceGroup>().HasIndex(e => new { e.TenantId, e.ResourceGroupCode }).IsUnique();
+        modelBuilder.Entity<ResourceGroup>().HasIndex(e => new { e.TenantId, e.GroupCode }).IsUnique();
         modelBuilder.Entity<ResourceGroup>()
         .HasOne<ResourceGroup>()
         .WithMany()
@@ -48,7 +48,7 @@ public class ResourceContext : DbContext
         modelBuilder.Entity<ResourceType>().Property(e => e.ResourceTypeId).HasColumnType("uuid");
         modelBuilder.Entity<ResourceType>().HasIndex(e => e.TenantId);
         modelBuilder.Entity<ResourceType>().Property(e => e.TenantId).HasColumnType("uuid");
-        modelBuilder.Entity<ResourceType>().HasIndex(e => new { e.TenantId, e.ResourceTypeCode }).IsUnique();
+        modelBuilder.Entity<ResourceType>().HasIndex(e => new { e.TenantId, e.TypeCode }).IsUnique();
         modelBuilder.Entity<ResourceType>()
         .HasOne<ResourceType>()
         .WithMany()
