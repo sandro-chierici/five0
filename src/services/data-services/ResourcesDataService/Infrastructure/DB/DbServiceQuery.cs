@@ -18,7 +18,7 @@ public class DbServiceQuery(
     /// <returns></returns>
     public async ValueTask<QueryResponse<List<ResourceView>>> GetResourcesAsync(
         Expression<Func<Resource, bool>> filter,
-        int limit = ResourceRules.ResourcesQueryLimit)
+        int limit = SystemValues.ResourcesQueryLimit)
     {
         try
         {
@@ -71,13 +71,14 @@ public class DbServiceQuery(
             // Combine results           
             var data = resources.Select(r => new ResourceView
             {
+                ResourceId = r.Resource.ResourceId.ToString(),
                 ResourceCode = r.Resource.ResourceCode,
                 TenantId = r.Resource.TenantId.ToString(),
-                Name = r.Resource.Name,
                 Description = r.Resource.Description,
                 ResourceType = new ResourceTypeView
                 {
-                    ResourceTypeCode = r.ResourceType?.ResourceTypeCode,
+                    ResourceTypeId = r.ResourceType?.ResourceTypeId.ToString(),
+                    ResourceTypeCode = r.ResourceType?.TypeCode,
                     Description = r.ResourceType?.Description,
                     IsRootType = r.ResourceType?.IsRootType() ?? false
                 },
@@ -89,7 +90,7 @@ public class DbServiceQuery(
                 //     .FirstOrDefault()?.Status.Description),
                 ResourceGroups = grps
                     .Where(gr => gr.Resource.ResourceId == r.Resource.ResourceId)
-                    .Select(g => new ResourceGroupView(g.Group.ResourceGroupCode, g.Group.Description))
+                    .Select(g => new ResourceGroupView(g.Group.ResourceGroupId.ToString(), g.Group.GroupCode, g.Group.Description))
                     .ToList(),
                 Metadata = r.Resource.Metadata != null ?
                             System.Text.Json.JsonSerializer.Deserialize<object>(r.Resource.Metadata) :

@@ -15,15 +15,15 @@ public class OriginTraceMiddleware(RequestDelegate Next)
     public async Task InvokeAsync(HttpContext context)
     {
         // service unique id starting request
-        context.Request.Headers.TryGetValue(ResourceRules.TraceIdHeader, out var traceId);
+        context.Request.Headers.TryGetValue(SystemValues.TraceIdHeader, out var traceId);
         if (string.IsNullOrWhiteSpace(traceId))
         {
             // create it if does not exists, this is the real first origin request
-            traceId = ResourceRules.GetNewTraceId();
+            traceId = SystemValues.GetNewTraceId();
         }
 
         // put it along request items
-        context.Items[ResourceRules.TraceIdHeader] = traceId;   
+        context.Items[SystemValues.TraceIdHeader] = traceId;   
 
         // Call the next delegate/middleware in the pipeline.
         await Next(context);

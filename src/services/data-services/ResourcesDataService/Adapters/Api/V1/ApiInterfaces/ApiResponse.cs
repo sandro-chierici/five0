@@ -8,8 +8,8 @@ namespace ResourcesManager.Adapters.Api.V1.ApiInterfaces;
 public class MetadataPart()
 {
     public DateTimeOffset ServiceTimeUTC { get; } = DateTimeOffset.UtcNow;
-    public string Source { get; } = ResourceRules.SourceName;
-    public string Version { get; } = ResourceRules.SourceVersion;   
+    public string Source { get; } = SystemValues.SourceName;
+    public string Version { get; } = SystemValues.SourceVersion;   
 }
 
 public record DataPart(object Payload);

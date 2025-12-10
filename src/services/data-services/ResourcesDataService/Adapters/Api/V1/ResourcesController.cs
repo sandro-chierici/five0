@@ -53,6 +53,7 @@ public class ResourcesController(IDatabaseQuery dbQuery, IDatabaseCommand dbComm
                 await dbQuery.GetResourcesAsync(
                     resource =>
                     resource.TenantId.ToString() == tenantId &&
+                    resource.ResourceCode != null &&
                     resource.ResourceCode.ToLower().Trim().StartsWith(q.NameStartsWith.ToLower().Trim())
                     ),
 

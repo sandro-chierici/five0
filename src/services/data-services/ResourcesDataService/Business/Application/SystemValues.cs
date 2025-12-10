@@ -1,6 +1,6 @@
 namespace ResourcesManager.Business.Application;
 
-public static class ResourceRules
+public static class SystemValues
 {
     public const int MaxResourceNameLength = 100;
     public const int MaxResourceDescriptionLength = 500;
@@ -28,12 +28,6 @@ public static class ResourceRules
     /// </summary>
     /// <returns></returns>
     public static string GetNewTraceId() => $"{SourceName}:{Guid.NewGuid()}";
-
-    /// <summary>
-    /// Create a new PK using Guid version 7
-    /// </summary>
-    /// <returns></returns>
-    public static Guid CreatePK(DateTimeOffset? seed = null) => Guid.CreateVersion7(seed ?? DateTimeOffset.UtcNow);
 
     /// <summary>
     /// Normalize string input

@@ -2,20 +2,22 @@
 
 public record struct ResourceTypeView()
 {
+    public string? ResourceTypeId { get; init; }
     public string? ResourceTypeCode { get; init; }
     public string? Description { get; init; }
     public bool IsRootType { get; init; }
 }
 
-public record struct ResourceStatusView(string? ResourceStatusCode, string? Description);
+public record struct ResourceStatusView(string? ResourceStatusId, string? ResourceStatusCode, string? Description);
 
-public record struct ResourceGroupView(string? ResourceGroupCode, string? Description);
+public record struct ResourceGroupView(string? ResourceGroupId, string? ResourceGroupCode, string? Description);
 
 /// <summary>
 /// Resource def
 /// </summary>
 public record ResourceView()
 {
+    public string? ResourceId { get; set; }
     public string? ResourceCode { get; set; }
     public string? TenantId { get; init; }
     public string? Name { get; init; }

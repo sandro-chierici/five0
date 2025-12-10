@@ -7,6 +7,7 @@ namespace ResourcesManager.Infrastructure.DB;
 
 public class DbServiceCommand(
     IDbContextFactory<ResourceContext> resourceContextFactory,
+    IResourceRules resourceRules,
     ILogger<DbServiceCommand> logger) : IDatabaseCommand
 {
     /// <summary>
@@ -80,10 +81,10 @@ public class DbServiceCommand(
             using var rctx = await resourceContextFactory.CreateDbContextAsync();
 
             // getting exact time for transaction
-            var localSystemNow = DateTimeOffset.UtcNow;
+            var localSystemNow = await resourceRules.GetCurrentTimeAsync();
 
-            var tenantId = ResourceRules.CreatePK(localSystemNow); // in real scenario, resolve tenant from request.TenantId
-            var resourceId = ResourceRules.CreatePK(localSystemNow);
+            var tenantId = await resourceRules.CreatePKAsync(localSystemNow); // in real scenario, resolve tenant from request.TenantId
+            var resourceId = await resourceRules.CreatePKAsync(localSystemNow);
 
             // resource creation
             var resource = new Resource

@@ -8,10 +8,10 @@ public interface IDatabaseQuery
 {
     ValueTask<QueryResponse<List<ResourceView>>> GetResourcesAsync(
         Expression<Func<Resource, bool>> filter,
-        int limit = ResourceRules.ResourcesQueryLimit);
+        int limit = SystemValues.ResourcesQueryLimit);
 
     // ValueTask<QueryResponse<List<ResourceView>>> GetResourcesByGroupAsync(
     //     Expression<Func<ResourceGroup, bool>> filter,
-    //     int limit = ResourceRules.ResourcesQueryLimit);        
+    //     int limit = SystemValues.ResourcesQueryLimit);        
      
 }

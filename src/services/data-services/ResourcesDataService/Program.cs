@@ -5,6 +5,7 @@ using ResourcesManager.Business.Application.ExternalServices;
 using ResourcesManager.Infrastructure.DB;
 using Services.ResourcesManager.Infrastructure.Services;
 using ResourcesManager.Business.Application.ExternalServices.SyncService;
+using ResourcesManager.Infrastructure.Business;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,7 @@ builder.Services.AddHealthChecks();
 // App services
 builder.Services.AddSingleton<IDatabaseQuery, DbServiceQuery>();
 builder.Services.AddSingleton<IDatabaseCommand, DbServiceCommand>();
+builder.Services.AddSingleton<IResourceRules, Rules>();
 
 // External Services
 builder.Services.AddTimeServiceClient(builder.Configuration);

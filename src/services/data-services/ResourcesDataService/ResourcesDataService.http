@@ -10,7 +10,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-    "resourceCode": ["RES001","RES002","RES003","RES004","RES005","RES006","RES007","RES008","RES009","RES010"]
+    "resourceCode": ["RES002","RES003","RES004","RES005","RES006","RES007","RES008","RES009","RES010"]
 }
 
 ###
@@ -20,7 +20,6 @@ Content-Type: application/json
 
 {
     "resourceCode": "RES002",
-    "name": "Resource 1",
     "description": "Resource 2",
     "resourceGroupCode": "MAIN_GROUP"
 }
