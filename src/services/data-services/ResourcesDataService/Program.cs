@@ -2,10 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using ResourcesManager.Business.Application;
 using ResourcesManager.Business.Application.Configuration;
 using ResourcesManager.Business.Application.ExternalServices;
-using ResourcesManager.Infrastructure.DB;
-using Services.ResourcesManager.Infrastructure.Services;
 using ResourcesManager.Business.Application.ExternalServices.SyncService;
 using ResourcesManager.Infrastructure.Business;
+using ResourcesManager.Infrastructure.DB;
+using Services.ResourcesManager.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
