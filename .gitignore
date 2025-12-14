@@ -20,3 +20,4 @@
 src/services/data-services/ResourcesDataService/bin
 src/services/data-services/ResourcesDataService/obj
 src/services/data-services/ResourcesDataService/ResourcesDataService.csproj.user
+/src/services/data-services/ResourcesDataService/.vs
