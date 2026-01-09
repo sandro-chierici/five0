@@ -78,7 +78,7 @@ public class DbServiceQuery(
                 ResourceType = new ResourceTypeView
                 {
                     ResourceTypeId = r.ResourceType?.ResourceTypeId.ToString(),
-                    ResourceTypeCode = r.ResourceType?.TypeCode,
+                    TypeCode = r.ResourceType?.TypeCode,
                     Description = r.ResourceType?.Description,
                     IsRootType = r.ResourceType?.IsRootType() ?? false
                 },
