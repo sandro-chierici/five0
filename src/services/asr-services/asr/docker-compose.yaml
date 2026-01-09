@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: asr-postgres
+    environment:
+      POSTGRES_DB: asr_db
+      POSTGRES_USER: asr_user
+      POSTGRES_PASSWORD: asr_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U asr_user -d asr_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: asr-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  asr-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: asr-service
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # Config file path (optional - defaults to /app/config.yaml)
+      ASR_CONFIG_PATH: /app/config.yaml
+      # Environment variable overrides (optional)
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: asr_db
+      DB_USER: asr_user
+      DB_PASSWORD: asr_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      # Optional overrides
+      # WHISPER_MODEL: small
+      # CONFIDENCE_THRESHOLD: 0.8
+      # VAD_ENABLED: "true"
+      # RNNOISE_ENABLED: "true"
+      # LOG_LEVEL: debug
+    volumes:
+      # Mount config file for easy customization
+      - ./config.yaml:/app/config.yaml:ro
+      # Persist Whisper models to avoid re-downloading
+      - whisper_models:/root/.cache/whisper
+    restart: unless-stopped
+    # GPU support (uncomment if using NVIDIA GPU)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+volumes:
+  postgres_data:
+  redis_data:
+  whisper_models:

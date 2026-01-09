@@ -1,0 +1,58 @@
+# ASR Service Configuration
+# ==========================
+
+# Whisper Model Settings
+model:
+  name: "base"  # Options: tiny, base, small, medium, large
+  language: "it"
+  task: "transcribe"
+
+# Audio Preprocessing
+audio:
+  sample_rate: 16000
+  max_size_mb: 10
+
+# Noise Reduction (RNNoise)
+rnnoise:
+  enabled: true
+  binary_path: "/usr/local/bin/rnnoise_demo"
+
+# Voice Activity Detection (WebRTC VAD)
+vad:
+  enabled: true
+  aggressiveness: 3  # 0-3, higher = more aggressive
+  frame_duration_ms: 30  # 10, 20, or 30 ms
+
+# Semantic Filtering
+semantic:
+  confidence_threshold: 0.75
+  max_alternatives: 3
+  allowed_vocabularies:
+    - "default"
+    - "parts"
+    - "quality"
+    - "maintenance"
+
+# Database Settings (PostgreSQL)
+database:
+  host: "localhost"
+  port: 5432
+  name: "asr_db"
+  user: "asr_user"
+  password: "asr_password"
+  pool_size: 20
+  max_overflow: 10
+
+# Cache Settings (Redis)
+cache:
+  host: "localhost"
+  port: 6379
+  db: 0
+  ttl_seconds: 3600  # 1 hour
+
+# API Settings
+api:
+  host: "0.0.0.0"
+  port: 8000
+  timeout_seconds: 30
+  log_level: "info"
