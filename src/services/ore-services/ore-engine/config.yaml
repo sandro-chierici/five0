@@ -1,0 +1,56 @@
+kafka:
+  brokers:
+    - "kafka1:9092,kafka2:9092,kafka3:9092"
+  topics:
+    frame_input: video-frames-input
+    detection_results: detection-results
+  consumer_group: ore-engine-group
+  auto_offset_reset: earliest
+  max_poll_interval_ms: 300000
+
+redis:
+  url: redis://redis:6379
+  db: 1
+  pool_size: 10
+
+minio:
+  endpoint: minio:9000
+  access_key: minioadmin
+  secret_key: minioadmin
+  secure: false
+  bucket_frames: ore-frames
+  bucket_models: ore-models
+
+inference:
+  device: cuda  # cuda, cpu, or mps (for Mac)
+  batch_size: 1
+  max_batch_wait: 100  # milliseconds
+  model_cache_size: 3
+  default_model_id: yolov8n
+  confidence_threshold: 0.5
+  iou_threshold: 0.45
+  max_detections: 100
+
+models:
+  default:
+    model_id: yolov8n
+    path: yolov8n.pt
+    framework: yolov8
+    classes:
+      - person
+      - bicycle
+      - car
+      - motorcycle
+      - airplane
+      - bus
+      - train
+      - truck
+
+performance:
+  workers: 4
+  prefetch_count: 10
+  processing_timeout: 30  # seconds
+
+logging:
+  level: INFO  # DEBUG, INFO, WARNING, ERROR
+  format: json

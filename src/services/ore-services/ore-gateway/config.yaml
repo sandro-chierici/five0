@@ -1,0 +1,42 @@
+server:
+  http_port: 8080
+  shutdown_timeout: 30s
+
+kafka:
+  brokers:
+    - kafka:9092
+  topics:
+    frame_input: video-frames-input
+    detection_results: detection-results
+    session_control: session-control
+  consumer_group: ore-gateway-group
+  batch_size: 100
+  batch_timeout: 100ms
+
+redis:
+  url: redis:6379
+  password: ""
+  db: 0
+  pool_size: 10
+  session_ttl: 3600  # 1 hour in seconds
+
+minio:
+  endpoint: minio:9000
+  access_key: minioadmin
+  secret_key: minioadmin
+  use_ssl: false
+  bucket_frames: ore-frames
+  bucket_models: ore-models
+  presigned_url_expiry: 3600  # 1 hour
+
+websocket:
+  read_buffer_size: 1024
+  write_buffer_size: 1024
+  ping_period: 54s
+  pong_wait: 60s
+  write_wait: 10s
+  max_message_size: 512000
+
+logging:
+  level: info  # debug, info, warn, error
+  format: json  # json, text
