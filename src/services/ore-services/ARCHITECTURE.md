@@ -65,7 +65,7 @@ The Object Recognition Engine (ORE) is a real-time object detection system desig
 │  └──────┬───────┘  └───────▲──────┘  └─────────────────┘          │
 │         │                   │                                       │
 │  ┌──────▼───────────────────┴──────┐                               │
-│  │    Session Manager (Redis)      │                               │
+│  │    Session Manager (Redis)      │                                 │
 │  └──────┬───────────────────▲──────┘                               │
 │         │                   │                                       │
 │  ┌──────▼──────┐    ┌──────┴──────┐                               │
