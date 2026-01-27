@@ -1,6 +1,6 @@
 # Core dependencies
 python-dotenv==1.0.0
-pyyaml==6.0.1
+pyyaml==6.0.3
 
 # Kafka
 confluent-kafka[protobuf]==2.3.0

@@ -1,5 +1,5 @@
 # Base stage - common dependencies
-FROM python:3.11-slim AS base
+FROM python:3.14.2-trixie AS base
 
 WORKDIR /app
 
@@ -36,7 +36,7 @@ CMD ["python", "main.py"]
 # ============================================================================
 # GPU Stage
 # ============================================================================
-FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04 AS gpu
+FROM nvidia/cuda:13.1.1-base-ubuntu22.04 AS gpu
 
 WORKDIR /app
 
@@ -57,7 +57,7 @@ RUN ln -s /usr/bin/python3.11 /usr/bin/python
 
 # Copy requirements and install
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python3 -m pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
@@ -66,4 +66,5 @@ COPY . .
 RUN mkdir -p proto && \
     python -m grpc_tools.protoc -I../proto --python_out=./proto --pyi_out=./proto ../proto/recognition.proto || true
 
-CMD ["python", "main.py"]
+CMD ["python3", "main.py"]
+
