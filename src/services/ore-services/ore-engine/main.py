@@ -12,7 +12,9 @@ from pathlib import Path
 from src.config.settings import Settings
 from src.kafka.consumer import FrameConsumer
 from src.kafka.producer import ResultProducer
+from src.kafka.model_consumer import ModelCommandConsumer
 from src.models.loader import ModelLoader
+from src.models.dynamic_manager import DynamicModelManager
 from src.processors.frame_processor import FrameProcessor
 from src.storage.minio_client import MinIOClient
 from src.utils.logger import setup_logger
@@ -56,6 +58,25 @@ async def main():
         logger.info(f"Loading default model: {config.inference.default_model_id}")
         model_loader.load_model(config.inference.default_model_id)
 
+        # Initialize dynamic model manager
+        logger.info("Initializing dynamic model manager...")
+        dynamic_model_manager = DynamicModelManager(
+            minio_client=minio_client,
+            inference_config=config.inference,
+            minio_config=config.minio
+        )
+
+        # Initialize model command consumer (Kafka-based model management)
+        model_control_topic = config.kafka.topics.get("model_control", "model-control")
+        model_response_topic = config.kafka.topics.get("model_control_response", "model-control-response")
+        logger.info(f"Initializing model command consumer on topic: {model_control_topic}")
+        model_command_consumer = ModelCommandConsumer(
+            config=config.kafka,
+            model_manager=dynamic_model_manager,
+            command_topic=model_control_topic,
+            response_topic=model_response_topic
+        )
+
         # Kafka producer
         logger.info("Initializing Kafka producer...")
         producer = ResultProducer(config.kafka)
@@ -84,21 +105,27 @@ async def main():
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    # Start consuming
-    logger.info("Starting frame consumption...")
+    # Start services
+    logger.info("Starting services...")
     try:
-        # Run consumer in background task
+        # Start model command consumer in background
+        model_command_task = asyncio.create_task(model_command_consumer.start())
+        
+        # Run frame consumer in background task
         consume_task = asyncio.create_task(consumer.start())
         
         # Wait for shutdown signal
         await shutdown_event.wait()
         
-        # Stop consumer
-        logger.info("Stopping consumer...")
+        # Stop consumers
+        logger.info("Stopping frame consumer...")
         await consumer.stop()
         
-        # Wait for consume task to finish
-        await consume_task
+        logger.info("Stopping model command consumer...")
+        await model_command_consumer.stop()
+        
+        # Wait for tasks to finish
+        await asyncio.gather(consume_task, model_command_task, return_exceptions=True)
 
     except Exception as e:
         logger.error(f"Error during execution: {e}", exc_info=True)

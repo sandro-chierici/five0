@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/five0/ore/gateway/internal/config"
@@ -195,7 +196,7 @@ func (s *RedisStore) Close() error {
 func NewSession(clientType, modelID string) *Session {
 	now := time.Now().Unix()
 	return &Session{
-		ID:              uuid.New().String(),
+		ID:              strings.ReplaceAll(uuid.New().String(), "-", ""),
 		ClientType:      clientType,
 		ModelID:         modelID,
 		ConfThreshold:   0.5,

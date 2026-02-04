@@ -73,6 +73,7 @@ func main() {
 	// Initialize HTTP handlers
 	sessionHandler := handlers.NewSessionHandler(sessionManager, cfg, log)
 	frameHandler := handlers.NewFrameHandler(sessionManager, log)
+	modelHandler := handlers.NewModelHandler(minioClient, kafkaProducer, cfg, log)
 
 	// Setup HTTP routes
 	httpMux := http.NewServeMux()
@@ -94,6 +95,22 @@ func main() {
 
 	httpMux.HandleFunc("POST /api/v1/sessions/{id}/frames", frameHandler.SubmitFrame)
 	httpMux.HandleFunc("GET /api/v1/sessions/{id}/frames/upload-url", frameHandler.GenerateUploadURL)
+
+	// Model management endpoints (storage)
+	httpMux.HandleFunc("GET /api/v1/models", modelHandler.ListModels)
+	httpMux.HandleFunc("POST /api/v1/models", modelHandler.CreateModel)
+	httpMux.HandleFunc("GET /api/v1/models/{id}", modelHandler.GetModel)
+	httpMux.HandleFunc("DELETE /api/v1/models/{id}", modelHandler.DeleteModel)
+	httpMux.HandleFunc("PUT /api/v1/models/{id}/classes", modelHandler.UpdateModelClasses)
+	httpMux.HandleFunc("POST /api/v1/models/{id}/weights", modelHandler.UpdateModelWeights)
+	httpMux.HandleFunc("GET /api/v1/models/{id}/download", modelHandler.GetModelDownloadURL)
+
+	// Model runtime control endpoints (via Kafka)
+	httpMux.HandleFunc("POST /api/v1/models/{id}/load", modelHandler.LoadModelCommand)
+	httpMux.HandleFunc("POST /api/v1/models/{id}/reload", modelHandler.ReloadModelCommand)
+	httpMux.HandleFunc("POST /api/v1/models/{id}/unload", modelHandler.UnloadModelCommand)
+	httpMux.HandleFunc("POST /api/v1/models/{id}/classes/apply", modelHandler.UpdateModelClassesRuntime)
+	httpMux.HandleFunc("POST /api/v1/models/cached/list", modelHandler.ListCachedModelsCommand)
 
 	httpServer := &http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.Server.HTTPPort),

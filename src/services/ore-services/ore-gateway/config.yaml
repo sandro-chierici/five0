@@ -9,6 +9,8 @@ kafka:
     frame_input: video-frames-input
     detection_results: detection-results
     session_control: session-control
+    model_control: model-control
+    model_control_response: model-control-response
   consumer_group: ore-gateway-group
   batch_size: 100
   batch_timeout: 100ms

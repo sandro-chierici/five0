@@ -32,9 +32,11 @@ type KafkaConfig struct {
 }
 
 type TopicsConfig struct {
-	FrameInput       string `yaml:"frame_input"`
-	DetectionResults string `yaml:"detection_results"`
-	SessionControl   string `yaml:"session_control"`
+	FrameInput           string `yaml:"frame_input"`
+	DetectionResults     string `yaml:"detection_results"`
+	SessionControl       string `yaml:"session_control"`
+	ModelControl         string `yaml:"model_control"`
+	ModelControlResponse string `yaml:"model_control_response"`
 }
 
 type RedisConfig struct {

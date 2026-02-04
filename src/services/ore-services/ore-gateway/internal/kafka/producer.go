@@ -14,6 +14,7 @@ import (
 type Producer struct {
 	frameWriter   *kafkago.Writer
 	sessionWriter *kafkago.Writer
+	modelWriter   *kafkago.Writer
 	config        config.KafkaConfig
 }
 
@@ -40,9 +41,24 @@ func NewProducer(cfg config.KafkaConfig) (*Producer, error) {
 		RequiredAcks: kafkago.RequireOne,
 	}
 
+	// Model control writer
+	modelControlTopic := cfg.Topics.ModelControl
+	if modelControlTopic == "" {
+		modelControlTopic = "model-control"
+	}
+	modelWriter := &kafkago.Writer{
+		Addr:         kafkago.TCP(cfg.Brokers...),
+		Topic:        modelControlTopic,
+		Balancer:     &kafkago.RoundRobin{},
+		BatchSize:    1,
+		BatchTimeout: 50 * time.Millisecond,
+		RequiredAcks: kafkago.RequireOne,
+	}
+
 	return &Producer{
 		frameWriter:   frameWriter,
 		sessionWriter: sessionWriter,
+		modelWriter:   modelWriter,
 		config:        cfg,
 	}, nil
 }
@@ -105,12 +121,41 @@ func (p *Producer) PublishSessionEvent(ctx context.Context, event map[string]int
 	return nil
 }
 
+// PublishModelCommand publishes a model management command
+func (p *Producer) PublishModelCommand(ctx context.Context, command map[string]interface{}) error {
+	// Serialize to JSON
+	data, err := json.Marshal(command)
+	if err != nil {
+		return fmt.Errorf("failed to marshal model command: %w", err)
+	}
+
+	// Get correlation ID for key
+	correlationID, _ := command["correlation_id"].(string)
+
+	// Create Kafka message
+	msg := kafkago.Message{
+		Key:   []byte(correlationID),
+		Value: data,
+		Time:  time.Now(),
+	}
+
+	// Write to Kafka
+	if err := p.modelWriter.WriteMessages(ctx, msg); err != nil {
+		return fmt.Errorf("failed to write model command: %w", err)
+	}
+
+	return nil
+}
+
 // Close closes the Kafka writers
 func (p *Producer) Close() error {
 	if err := p.frameWriter.Close(); err != nil {
 		return err
 	}
 	if err := p.sessionWriter.Close(); err != nil {
+		return err
+	}
+	if err := p.modelWriter.Close(); err != nil {
 		return err
 	}
 	return nil

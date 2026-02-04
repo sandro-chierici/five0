@@ -4,6 +4,7 @@ pyyaml==6.0.3
 
 # Kafka
 confluent-kafka[protobuf]==2.3.0
+aiokafka==0.10.0
 
 # Redis
 redis==5.0.1

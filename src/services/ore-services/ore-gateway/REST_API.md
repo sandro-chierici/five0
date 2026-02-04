@@ -2,7 +2,7 @@
 
 ## Overview
 
-The ORE Gateway provides a REST API for managing object recognition sessions and submitting frames for processing. This replaces the previous gRPC implementation for simplicity in POC development.
+The ORE Gateway provides a REST API for managing object recognition sessions, submitting frames for processing, and dynamically managing YOLO models with weights and classes. Model runtime control is handled asynchronously via Kafka messaging.
 
 ## Base URL
 
@@ -11,6 +11,10 @@ http://localhost:8080/api/v1
 ```
 
 ## Endpoints
+
+---
+
+## Session Endpoints
 
 ### 1. Create Session
 
@@ -168,6 +172,287 @@ ws://localhost:8080/ws/{session_id}
 **GET** `/health`
 
 Returns `200 OK` with body `"OK"` when service is healthy.
+
+---
+
+## Model Management Endpoints
+
+### 7. Create Model
+
+Create a new model definition with classes and get a presigned URL for uploading weights.
+
+**POST** `/models`
+
+**Request Body:**
+```json
+{
+  "model_id": "custom-detector",
+  "name": "Custom Object Detector",
+  "description": "Trained model for industrial parts detection",
+  "framework": "yolov8",
+  "classes": ["bolt", "nut", "washer", "screw", "gear"]
+}
+```
+
+**Response** (201 Created):
+```json
+{
+  "model_id": "custom-detector",
+  "upload_url": "https://minio:9000/ore-models/...",
+  "weights_path": "models/custom-detector/weights.pt",
+  "expires_in_seconds": 900,
+  "classes_path": "models/custom-detector/classes.json",
+  "classes_stored": true
+}
+```
+
+### 8. List Models
+
+List all available models in storage.
+
+**GET** `/models`
+
+**Response** (200 OK):
+```json
+{
+  "models": [
+    {
+      "model_id": "custom-detector",
+      "name": "Custom Object Detector",
+      "framework": "yolov8",
+      "classes": ["bolt", "nut", "washer", "screw", "gear"],
+      "weights_path": "models/custom-detector/weights.pt",
+      "created_at": "2026-02-04T10:30:00Z",
+      "updated_at": "2026-02-04T10:30:00Z",
+      "size_bytes": 12345678
+    }
+  ],
+  "count": 1
+}
+```
+
+### 9. Get Model
+
+Get details of a specific model.
+
+**GET** `/models/{id}`
+
+**Response** (200 OK):
+```json
+{
+  "model_id": "custom-detector",
+  "name": "Custom Object Detector",
+  "description": "Trained model for industrial parts detection",
+  "framework": "yolov8",
+  "classes": ["bolt", "nut", "washer", "screw", "gear"],
+  "weights_path": "models/custom-detector/weights.pt",
+  "classes_path": "models/custom-detector/classes.json",
+  "created_at": "2026-02-04T10:30:00Z",
+  "updated_at": "2026-02-04T10:30:00Z",
+  "size_bytes": 12345678
+}
+```
+
+### 10. Update Model Classes (Storage)
+
+Update classes for a model in storage.
+
+**PUT** `/models/{id}/classes`
+
+**Request Body:**
+```json
+{
+  "classes": ["bolt", "nut", "washer", "screw", "gear", "spring"]
+}
+```
+
+**Response** (200 OK):
+```json
+{
+  "success": true,
+  "message": "Classes updated successfully",
+  "classes_count": 6
+}
+```
+
+### 11. Update Model Weights
+
+Get a presigned URL to upload new weights for an existing model.
+
+**POST** `/models/{id}/weights`
+
+**Response** (200 OK):
+```json
+{
+  "upload_url": "https://minio:9000/ore-models/...",
+  "weights_path": "models/custom-detector/weights.pt",
+  "expires_in_seconds": 900
+}
+```
+
+### 12. Delete Model
+
+Delete a model and all associated files from storage.
+
+**DELETE** `/models/{id}`
+
+**Response** (200 OK):
+```json
+{
+  "success": true,
+  "message": "Model custom-detector deleted successfully"
+}
+```
+
+### 13. Get Model Download URL
+
+Get a presigned URL to download model weights.
+
+**GET** `/models/{id}/download`
+
+**Response** (200 OK):
+```json
+{
+  "download_url": "https://minio:9000/ore-models/...",
+  "weights_path": "models/custom-detector/weights.pt",
+  "expires_in_seconds": 900
+}
+```
+
+---
+
+## Model Runtime Control Endpoints (Async via Kafka)
+
+These endpoints send commands to the ore-engine via Kafka for runtime model management. Responses are asynchronous - the API returns a `correlation_id` that can be used to track the command result.
+
+### 14. Load Model
+
+Load a model from storage into the engine's memory.
+
+**POST** `/models/{id}/load`
+
+**Request Body (optional):**
+```json
+{
+  "force_reload": false
+}
+```
+
+**Response** (202 Accepted):
+```json
+{
+  "success": true,
+  "message": "Load model command sent",
+  "model_id": "custom-detector",
+  "correlation_id": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+### 15. Reload Model
+
+Reload a model from storage (fetch latest weights/classes).
+
+**POST** `/models/{id}/reload`
+
+**Response** (202 Accepted):
+```json
+{
+  "success": true,
+  "message": "Reload model command sent",
+  "model_id": "custom-detector",
+  "correlation_id": "550e8400-e29b-41d4-a716-446655440001"
+}
+```
+
+### 16. Unload Model
+
+Unload a model from engine's memory cache.
+
+**POST** `/models/{id}/unload`
+
+**Response** (202 Accepted):
+```json
+{
+  "success": true,
+  "message": "Unload model command sent",
+  "model_id": "custom-detector",
+  "correlation_id": "550e8400-e29b-41d4-a716-446655440002"
+}
+```
+
+### 17. Apply Classes at Runtime
+
+Update classes for a loaded model at runtime (without reloading weights).
+
+**POST** `/models/{id}/classes/apply`
+
+**Request Body:**
+```json
+{
+  "classes": ["bolt", "nut", "washer", "screw", "gear", "spring"]
+}
+```
+
+**Response** (202 Accepted):
+```json
+{
+  "success": true,
+  "message": "Update classes command sent",
+  "model_id": "custom-detector",
+  "classes_count": 6,
+  "correlation_id": "550e8400-e29b-41d4-a716-446655440003"
+}
+```
+
+### 18. List Cached Models
+
+Request list of models currently loaded in engine's cache.
+
+**POST** `/models/cached/list`
+
+**Response** (202 Accepted):
+```json
+{
+  "success": true,
+  "message": "List cached models command sent",
+  "correlation_id": "550e8400-e29b-41d4-a716-446655440004"
+}
+```
+
+---
+
+## Kafka Message Formats
+
+### Model Control Command (model-control topic)
+
+```json
+{
+  "command": "load_model|reload_model|unload_model|update_classes|list_models|get_model_info",
+  "correlation_id": "uuid",
+  "payload": {
+    "model_id": "custom-detector",
+    "classes": ["optional", "for", "update_classes"],
+    "force_reload": false
+  }
+}
+```
+
+### Model Control Response (model-control-response topic)
+
+```json
+{
+  "correlation_id": "uuid",
+  "result": {
+    "success": true,
+    "model_id": "custom-detector",
+    "message": "Model loaded successfully",
+    "classes_count": 5,
+    "classes": ["bolt", "nut", "washer", "screw", "gear"]
+  }
+}
+```
+
+---
 
 ## Error Responses
 

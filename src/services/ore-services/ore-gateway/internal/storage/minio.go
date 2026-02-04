@@ -142,3 +142,34 @@ func (c *MinIOClient) StatObject(ctx context.Context, bucket, objectName string)
 
 	return &info, nil
 }
+
+// ObjectInfo wraps minio.ObjectInfo for listing
+type ObjectInfo struct {
+	Key  string
+	Size int64
+	Err  error
+}
+
+// ListObjectsWithPrefix lists all objects with a given prefix
+func (c *MinIOClient) ListObjectsWithPrefix(ctx context.Context, bucket, prefix string) <-chan ObjectInfo {
+	ch := make(chan ObjectInfo)
+
+	go func() {
+		defer close(ch)
+
+		objectsCh := c.client.ListObjects(ctx, bucket, minio.ListObjectsOptions{
+			Prefix:    prefix,
+			Recursive: true,
+		})
+
+		for obj := range objectsCh {
+			ch <- ObjectInfo{
+				Key:  obj.Key,
+				Size: obj.Size,
+				Err:  obj.Err,
+			}
+		}
+	}()
+
+	return ch
+}

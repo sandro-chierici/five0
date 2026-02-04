@@ -4,6 +4,8 @@ kafka:
   topics:
     frame_input: video-frames-input
     detection_results: detection-results
+    model_control: model-control
+    model_control_response: model-control-response
   consumer_group: ore-engine-group
   auto_offset_reset: earliest
   max_poll_interval_ms: 300000
